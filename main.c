@@ -11,14 +11,34 @@ typedef struct tabela_t{
 }tabela;
 
 
-int main(void) {
-  FILE *tabela_file;
+void listagem_tab(){ 
+  FILE *relacao_file;
+  char nome[50];
+
+  printf("Tabelas existentes:\n");
+
+  relacao_file = fopen("relacaoTab", "r");
+
+  while(fscanf(relacao_file,"%s\n",nome)!=EOF){
+    printf("%s\n",nome);
+  }
+
+  if(relacao_file == NULL){
+    printf("Relação de tabelas não existe!\n");
+  }
+  else{
+    fclose(relacao_file);
+  }
+
+}
+
+void cria_tab(){
+  FILE *tabela_file, *relacao_file;
   tabela tabela_user;
   int i,j;
   char nome_campo[50], tipo_campo[50]; // auxiliares
   int campoOK, idOK; // bool
 
-  // criando tabela
   printf("Digite o nome da tabela: ");
   scanf("%s", tabela_user.nome);
   strcat(tabela_user.nome,".tab");
@@ -121,8 +141,64 @@ int main(void) {
     fclose(tabela_file);
   }
 
-  
+  // Registre a nova tabela no arquivo de relação de tabelas 
+  relacao_file = fopen("relacaoTab", "a+");
+  fprintf(relacao_file,"%s\n",tabela_user.nome);	
+ 
+  if(tabela_file == NULL){
+    printf("Relação de tabelas não abriu!\n");
+  }
+  else{
+    fclose(relacao_file);
+  }
 
   // fazer o free de tabela_user.tab
+  for(int j=0; j<tabela_user.C; j++)  
+    free(tabela_user.tab_L[j]);
+  free(tabela_user.tab_L);
+
+  for(int j=0; j<tabela_user.C; j++)
+    free(tabela_user.tab_tipos[j]);
+  free(tabela_user.tab_tipos);
+
+
+
+}
+
+
+int main(void) {
+  FILE *tabela_file, *relacao_file;
+  char op;
+  int continua; //bool
+
+  printf("Bem vindo ao SGBD KI! - vs beta - \n");
+
+  continua=1;
+  do{
+    printf("\n ***** MENU ***** \n");
+    printf("1 - Criar tabela\n");
+    printf("2 - Listar tabelas existentes\n");
+    printf("s - sair\n\n");
+
+    scanf(" %c",&op);
+
+    switch (op){
+    case '1':
+      cria_tab();
+      break;
+    case '2':
+      listagem_tab();
+      break;
+    case 's':
+      printf("Tchau!\n");
+      continua=0;
+      break;
+    default:
+      printf("Opção inválida. \n");
+      break;
+}
+  
+  }while(continua);
+
   return 0;
 }
