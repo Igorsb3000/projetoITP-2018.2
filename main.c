@@ -8,6 +8,7 @@ typedef struct tabela_t{
   int L, C;
   char ***tab;
 }tabela;
+//comentário
 
 int main(void) {
   FILE *tabela_file;
