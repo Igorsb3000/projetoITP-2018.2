@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <ctype.h>
 enum tipos_tab{ int_=1, float_, double_, char_, string_};
 
 
@@ -11,6 +11,34 @@ typedef struct tabela_t{
   char **tab_L; // linha da tabela
   enum tipos_tab *tipos; //char **tab_tipos; // tipos de cada campo da tabela
 }tabela;
+
+void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
+   /*switch(TIPO){
+	case(1)
+           strcpy(str_tipo,"int");
+	   break;
+	case(2)
+           strcpy(str_tipo, "float");
+	   break;
+	case(3)
+           strcpy(str_tipo,"double");
+           break;
+	case(4)
+           strcpy(str_tipo, "char");
+           break;
+	case(5)
+           strcpy(str_tipo,"string");
+	   break;
+	default:
+	   printf("Tipo inválido!\n");
+	   break;
+
+  }
+	*/
+     char tipos_all[][10]={"int", "float", "double", "char", "string"};
+     strcpy(str_tipo, tipos_all[TIPO-1]);
+
+}
 
 //Função para listar todas tabelas
 void listagem_tab(){ 
@@ -146,7 +174,7 @@ void cria_tab(){
   }
 
   // Registre a nova tabela no arquivo de relação de tabelas 
-  relacao_file = fopen("relacaoTab", "a+");
+  relacao_file = fopen("relacaoTab", "a");
   fprintf(relacao_file,"%s %d\n",tabela_user.nome, tabela_user.C);	
  
   if(tabela_file == NULL){
@@ -169,6 +197,7 @@ void insereLinha_tab(char nome_tab[50], int n){
     int temp;
     char str_temp[50];
     int i;
+    int campoOK; //bool
   
     tabela tab;
     strcpy(tab.nome, nome_tab); 
@@ -181,11 +210,12 @@ void insereLinha_tab(char nome_tab[50], int n){
     tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
 
 
-    tab_file = fopen(nome_tab, "rw+");
+    tab_file = fopen(nome_tab, "r");
+    
 
     //Leia a linha de tipos
     for(i=0; i<tab.C; i++){
-       fscanf(tab_file,"%[^;]s", str_temp);
+       fscanf(tab_file," %[^;]s", str_temp);
        sscanf(str_temp,"%d", &temp);
        fgetc(tab_file);
        tab.tipos[i]=temp;
@@ -194,25 +224,44 @@ void insereLinha_tab(char nome_tab[50], int n){
     }
     //Leia a linha dos campos
     for(i=0; i<tab.C; i++){
-       fscanf(tab_file,"%[^;]s", str_temp);
+       fscanf(tab_file," %[^;]s", str_temp);
        fgetc(tab_file);
-       tab.tab_L[i]=str_temp;
-       //printf("%s\n", str_temp);
+       strcpy(tab.tab_L[i], str_temp);
+       //printf("temp: %s  tab.tab_L: %s\n", str_temp, tab.tab_L[i]);
     }
-   
+    fclose(tab_file);
+    tab_file = fopen(nome_tab, "a");
 
-   /*
-    fscanf(tab_file,"%s", temp);
-     printf("%[^\t]s\n", temp); 
-    
-    fscanf(tab_file,"%s", temp);
-     printf("%[^\t]s\n", temp); 
-
-   fscanf(tab_file,"%s", temp);
-     printf("%[^\t]s\n", temp); 
-    
-*/
-
+    if(tab_file == NULL){
+      printf("Relação de tabelas não abriu!\n");
+    }
+    i=0;
+    do{
+        campoOK=1;
+        conversao_tipos(tab.tipos[i], str_temp);
+	printf("Insira o campo %s (tipo: %s )\n", tab.tab_L[i],str_temp);
+	scanf(" %[^\n]s", str_temp);
+        if(i==0){
+	       	for(int j=0; j<strlen(str_temp); j++){
+			if(isdigit(str_temp[j]) == 0){ 
+                             campoOK=0;
+                             printf("O parametro tem que ser do tipo INT\n");
+			     break;
+ 			}		    	
+                }
+		
+		if(campoOK && strlen(str_temp) > 10){ //10 digitos é o tamanho máximo de um unsigned int
+			campoOK=0;
+			printf("Erro! Parametro não cabe em um inteiro\n");
+		}
+        }
+	
+        if(campoOK){
+        	i++;
+  		fprintf(tab_file, "%s;", str_temp);
+	}
+    }while(i<tab.C);
+    fprintf(tab_file,"\n");
 
 
     if(tab_file == NULL){
@@ -225,6 +274,7 @@ void insereLinha_tab(char nome_tab[50], int n){
  
    
 }
+
 
 int main(void) {
   FILE *tabela_file, *relacao_file;
