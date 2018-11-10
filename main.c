@@ -114,7 +114,7 @@ void cria_tab(){
     }while(!campoOK);
   
     // verifique se o id da tabela é valido
-    if(tabela_user.tipos[j_id] = int_){
+    if(tabela_user.tipos[j_id] == int_){
       idOK=1;
     } else{ 
       printf("ID invalido. O ID da tabela precisa conter inteiros positivos (tipo int).\n");
@@ -166,8 +166,8 @@ void cria_tab(){
 }
 void insereLinha_tab(char nome_tab[50], int n){
     FILE *tab_file;
-    char temp[50];
-    char str_temp;
+    int temp;
+    char str_temp[50];
     int i;
   
     tabela tab;
@@ -185,18 +185,19 @@ void insereLinha_tab(char nome_tab[50], int n){
 
     //Leia a linha de tipos
     for(i=0; i<tab.C; i++){
-       fscanf(tab_file,"%[^;]s", temp);
+       fscanf(tab_file,"%[^;]s", str_temp);
+       sscanf(str_temp,"%d", &temp);
        fgetc(tab_file);
        tab.tipos[i]=temp;
-       //printf("%s\n", temp);
+       //printf("%s %d\n", str_temp, tab.tipos[i]);
 
     }
     //Leia a linha dos campos
     for(i=0; i<tab.C; i++){
-       fscanf(tab_file,"%[^;]s", temp);
+       fscanf(tab_file,"%[^;]s", str_temp);
        fgetc(tab_file);
-       tab.tab_L[i]=temp;
-       //printf("%s\n", temp);
+       tab.tab_L[i]=str_temp;
+       //printf("%s\n", str_temp);
     }
    
 
