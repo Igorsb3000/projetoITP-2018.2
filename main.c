@@ -13,31 +13,8 @@ typedef struct tabela_t{
 }tabela;
 
 void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
-   /*switch(TIPO){
-	case(1)
-           strcpy(str_tipo,"int");
-	   break;
-	case(2)
-           strcpy(str_tipo, "float");
-	   break;
-	case(3)
-           strcpy(str_tipo,"double");
-           break;
-	case(4)
-           strcpy(str_tipo, "char");
-           break;
-	case(5)
-           strcpy(str_tipo,"string");
-	   break;
-	default:
-	   printf("Tipo inválido!\n");
-	   break;
-
-  }
-	*/
      char tipos_all[][10]={"int", "float", "double", "char", "string"};
      strcpy(str_tipo, tipos_all[TIPO-1]);
-
 }
 
 //Função para listar todas tabelas
@@ -98,8 +75,8 @@ void cria_tab(){
     campoOK=1;
     for(int i=0; i<j; i++){
       if(strcmp(tabela_user.tab_L[i],nome_campo)==0){
-	campoOK=0;
-	break;
+		campoOK=0;
+		break;
       }
     }
 	
@@ -108,9 +85,9 @@ void cria_tab(){
     } else if(!campoOK){ 
       printf("Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
     }else{      
-	strcpy(tabela_user.tab_L[j],nome_campo);
-	tabela_user.tipos[j]=tipo_campo;
-	j++;
+		strcpy(tabela_user.tab_L[j],nome_campo);
+		tabela_user.tipos[j]=tipo_campo;
+		j++;
     }
 
   }while(j<tabela_user.C);
@@ -126,10 +103,10 @@ void cria_tab(){
   
       // verificar se campo ID passado existe
       for(int j=0; j<tabela_user.C; j++){
-	if(strcmp(tabela_user.tab_L[j],nome_campo)==0){
-	  campoOK=1;
-	  j_id=j;
-	  break;
+		if(strcmp(tabela_user.tab_L[j],nome_campo)==0){
+	  	campoOK=1;
+	  	j_id=j;
+	  	break;
 	}
       }
 
@@ -205,7 +182,7 @@ void insereLinha_tab(char nome_tab[50], int n){
     //alocando vetores da struct
     tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
     for(int j=0; j<tab.C; j++)
-    tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
+    	tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
   
     tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
 
@@ -239,16 +216,16 @@ void insereLinha_tab(char nome_tab[50], int n){
     do{
         campoOK=1;
         conversao_tipos(tab.tipos[i], str_temp);
-	printf("Insira o campo %s (tipo: %s )\n", tab.tab_L[i],str_temp);
-	scanf(" %[^\n]s", str_temp);
+		printf("Insira o campo %s (tipo: %s )\n", tab.tab_L[i],str_temp);
+		scanf(" %[^\n]s", str_temp);
         if(i==0){
 	       	for(int j=0; j<strlen(str_temp); j++){
-			if(isdigit(str_temp[j]) == 0){ 
+				if(isdigit(str_temp[j]) == 0){ 
                              campoOK=0;
                              printf("O parametro tem que ser do tipo INT\n");
-			     break;
- 			}		    	
-                }
+			     			 break;
+ 				}		    	
+            }
 		
 		if(campoOK && strlen(str_temp) > 10){ //10 digitos é o tamanho máximo de um unsigned int
 			campoOK=0;
@@ -258,8 +235,8 @@ void insereLinha_tab(char nome_tab[50], int n){
 	
         if(campoOK){
         	i++;
-  		fprintf(tab_file, "%s;", str_temp);
-	}
+  			fprintf(tab_file, "%s;", str_temp);
+		}
     }while(i<tab.C);
     fprintf(tab_file,"\n");
 
@@ -270,10 +247,128 @@ void insereLinha_tab(char nome_tab[50], int n){
     else{
      fclose(tab_file);
   }
-  
- 
    
 }
+void editar_tab(char nome_tab[50], char aux[10], int n){
+	FILE *tab_file;
+    int temp, temp2;
+    char str_temp[50];
+    int i;
+    int campo_OK; //bool
+    char aux2[10];
+
+    tabela tab; //tipo struct tabela_t
+
+    strcpy(tab.nome, nome_tab); 
+    tab.C=n;
+
+    //alocando vetores da struct
+    tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
+    for(int j=0; j<tab.C; j++)
+    	tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
+  
+    tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
+
+    tab_file = fopen(nome_tab, "rw");
+
+    	//Leia a linha de tipos
+    	for(i=0; i<tab.C; i++){
+       		fscanf(tab_file," %[^;]s", str_temp);
+       		sscanf(str_temp,"%d", &temp);
+       		fgetc(tab_file);
+       		tab.tipos[i]=temp;
+       	}
+      
+       		//Leia a linha dos campos
+    	for(i=0; i<tab.C; i++){
+       		fscanf(tab_file," %[^;]s", str_temp);
+       		fgetc(tab_file);
+       		strcpy(tab.tab_L[i], str_temp);
+       	}
+       
+    fclose(tab_file);
+    tab_file = fopen(nome_tab, "a");
+
+    if(tab_file == NULL){
+      printf("Relação de tabelas não abriu!\n");
+    }
+
+    i=0; 
+    tab_file = fopen(nome_tab, "r");
+    printf("Coluna ID:\n");
+
+    while(fscanf(tab_file," %[^\n]s", str_temp)!=EOF){ //AQUI 
+    	sscanf(str_temp," %[^;]s", aux2);
+    	if(strcmp(aux2, aux)==0)
+    		printf("Achei, o ID é: %s\n", aux2);
+    	printf("%s\n", aux2);
+    }
+
+    	/*
+    	for(int i=0; i<strlen(str_temp); i++){
+
+			if(strcmp(str_temp, aux)==0)
+    		printf("O ID é: %s", str_temp);
+    	}
+    	printf("%s\n", str_temp);
+    }
+    printf("\n"); */
+
+/*
+    for(i=0; i<tab.C; i++){
+    	fscanf(tab_file," %[^\n]s", str_temp);
+    	fgetc(tab_file);
+    	strcpy(tab.tab_L[i], str_temp);
+    	printf("%s", tab.tab_L[i]);
+    	printf("\n");
+
+    	//if(strcmp(str_temp, aux)==0){
+    	//	printf("Achou!\n");
+    	//}
+
+    }
+    printf("\n");
+    fclose(tab_file);
+
+
+  relacao_file = fopen("relacaoTab", "r");
+
+  while(fscanf(tab_file,"%s %*d\n",nome)!=EOF){ //enquanto não for End of File, continue imprimindo
+    printf("%s\n",nome);
+  } */
+    
+
+    
+
+
+    /*
+    do{
+        campoOK=1;
+        conversao_tipos(tab.tipos[i], str_temp);
+
+  		fscanf(tab_file,"%[^\n]s;",tab.tab_L[i+2]); // campo do id
+  		fgetc(tab_file)	
+
+
+
+        if(strcmp(tab.tab_L[i], aux)==0 && aux == tipo id) //AQUI
+
+		printf("Edite o campo %s (tipo: %s ) de ID %s\n", tab.tab_L[i],str_temp, aux);
+		scanf(" %[^\n]s", str_temp);
+        if(i==0){
+	       	for(int j=0; j<strlen(str_temp); j++){
+				if(isdigit(str_temp[j]) == 0){ 
+                             campoOK=0;
+                             printf("O parametro tem que ser do tipo INT\n");
+			     			 break;
+ 				}		    	
+            }
+
+    for(i=0; i<tab.C; i++)
+    	if(strcmp(tab.tab_L[i], aux)==0 && )
+ */
+
+  }
 
 
 int main(void) {
@@ -281,16 +376,19 @@ int main(void) {
   char op;
   char input[50], str_aux[50];
   int continua, existe; //bool
-  int temp;
+  int temp, temp2;
+  char aux[10];
 
   printf("Bem vindo ao SGBD KI! - vs beta - \n");
 
   continua=1;
+
   do{
     printf("\n ***** MENU ***** \n");
     printf("1 - Criar tabela\n");
     printf("2 - Listar tabelas existentes\n");
     printf("3 - Inserir linha em tabela\n");
+    printf("4 - Editar colunas da tabela\n");
     printf("s - sair\n\n");
 
     scanf(" %c",&op);
@@ -323,17 +421,48 @@ int main(void) {
        printf("Tabela não existe!\n");
       }
       break;
+    
+
+    case '4':
+      printf("Qual a tabela que deseja acessar?\n");
+      scanf(" %s",input);
+      
+      printf("Qual o ID da linha?\n");
+      scanf("%s", aux);
+      relacao_file = fopen("relacaoTab", "r");
+      existe=0;
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue imprimindo
+       if(strcmp(str_aux, input)==0){
+       	  	existe=1;
+       	  	break;
+        
+        }
+      }
+
+
+      fclose(relacao_file);
+      if(existe){
+      	editar_tab(input, aux, temp2);
+      }
+      else{
+       printf("Tabela não existe!\n");
+       break;
+      }
+
     case 's':
       printf("Tchau!\n");
       continua=0;
       break;
+      
+      
     default:
       printf("Opção inválida. \n");
       break;
    
-  }
-
-  }while(continua);
-
-  return 0;
+	}
+	}while(continua);
+		return 0;
 }
+
+
+
