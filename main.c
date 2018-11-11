@@ -249,7 +249,7 @@ void insereLinha_tab(char nome_tab[50], int n){
   }
    
 }
-void editar_tab(char nome_tab[50], char aux[10], int n){
+void editar_tab(char nome_tab[50], int n){ //, char aux[10]
 	FILE *tab_file;
     int temp, temp2;
     char str_temp[50];
@@ -295,14 +295,37 @@ void editar_tab(char nome_tab[50], char aux[10], int n){
 
     i=0; 
     tab_file = fopen(nome_tab, "r");
-    printf("Coluna ID:\n");
+    //printf("Coluna ID:\n");
+    int cont=0;
+    int existe_id;//bool
+    char chave[10];
+    char chave_user[10];
+    existe_id=0;
+    
+    do{ cont=0;
+
+    	printf("Insira o ID da linha: ");
+    	scanf("%s", chave_user);
 
     while(fscanf(tab_file," %[^\n]s", str_temp)!=EOF){ //AQUI 
+    	cont++;
+    	printf("PASSOU \n");
     	sscanf(str_temp," %[^;]s", aux2);
-    	if(strcmp(aux2, aux)==0)
-    		printf("Achei, o ID é: %s\n", aux2);
-    	printf("%s\n", aux2);
+    	//fscanf(tab_file, "%*[^\n]s");
+    	if(cont>=2 && strcmp(aux2, chave_user)==0){
+    		printf("PASSOU2\n");
+    		existe_id=1;
+    		strcpy(chave,aux2);
+    		break;
+    	}
+    	existe_id=0;
     }
+	}while(existe_id==0);
+    printf("PASSOU 3\n");
+    if(existe_id)
+    	printf("Achei, o ID é: %s\n", chave);
+    else
+    	printf("ID não existe!\n");
 
     	/*
     	for(int i=0; i<strlen(str_temp); i++){
@@ -341,32 +364,7 @@ void editar_tab(char nome_tab[50], char aux[10], int n){
     
 
 
-    /*
-    do{
-        campoOK=1;
-        conversao_tipos(tab.tipos[i], str_temp);
-
-  		fscanf(tab_file,"%[^\n]s;",tab.tab_L[i+2]); // campo do id
-  		fgetc(tab_file)	
-
-
-
-        if(strcmp(tab.tab_L[i], aux)==0 && aux == tipo id) //AQUI
-
-		printf("Edite o campo %s (tipo: %s ) de ID %s\n", tab.tab_L[i],str_temp, aux);
-		scanf(" %[^\n]s", str_temp);
-        if(i==0){
-	       	for(int j=0; j<strlen(str_temp); j++){
-				if(isdigit(str_temp[j]) == 0){ 
-                             campoOK=0;
-                             printf("O parametro tem que ser do tipo INT\n");
-			     			 break;
- 				}		    	
-            }
-
-    for(i=0; i<tab.C; i++)
-    	if(strcmp(tab.tab_L[i], aux)==0 && )
- */
+    
 
   }
 
@@ -427,8 +425,8 @@ int main(void) {
       printf("Qual a tabela que deseja acessar?\n");
       scanf(" %s",input);
       
-      printf("Qual o ID da linha?\n");
-      scanf("%s", aux);
+      //printf("Qual o ID da linha?\n");
+      //scanf("%s", aux);
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue imprimindo
@@ -438,11 +436,9 @@ int main(void) {
         
         }
       }
-
-
       fclose(relacao_file);
       if(existe){
-      	editar_tab(input, aux, temp2);
+      	editar_tab(input, temp2);
       }
       else{
        printf("Tabela não existe!\n");
