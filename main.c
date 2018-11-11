@@ -169,86 +169,113 @@ void cria_tab(){
   free(tabela_user.tipos);
 
 }
+
 void insereLinha_tab(char nome_tab[50], int n){
-    FILE *tab_file;
-    int temp;
-    char str_temp[50];
-    int i;
-    int campoOK; //bool
+  FILE *tab_file;
+  int temp;
+  char str_temp[50], id_file[50];
+  int i;
+  int campoOK; //bool
   
-    tabela tab;
-    strcpy(tab.nome, nome_tab); 
-    tab.C=n;
-    //alocando vetores da struct
-    tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
-    for(int j=0; j<tab.C; j++)
-    	tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
+  tabela tab;
+  strcpy(tab.nome, nome_tab); 
+  tab.C=n;
+
+  //alocando vetores da struct
+  tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
+  for(int j=0; j<tab.C; j++)
+    tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
   
-    tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
+  tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
 
 
-    tab_file = fopen(nome_tab, "r");
-    
+  tab_file = fopen(nome_tab, "r");    
+  if(tab_file == NULL)
+    printf("Tabela não abriu!\n");
 
-    //Leia a linha de tipos
-    for(i=0; i<tab.C; i++){
-       fscanf(tab_file," %[^;]s", str_temp);
-       sscanf(str_temp,"%d", &temp);
-       fgetc(tab_file);
-       tab.tipos[i]=temp;
-       //printf("%s %d\n", str_temp, tab.tipos[i]);
-
-    }
-    //Leia a linha dos campos
-    for(i=0; i<tab.C; i++){
-       fscanf(tab_file," %[^;]s", str_temp);
-       fgetc(tab_file);
-       strcpy(tab.tab_L[i], str_temp);
-       //printf("temp: %s  tab.tab_L: %s\n", str_temp, tab.tab_L[i]);
-    }
-    fclose(tab_file);
-    tab_file = fopen(nome_tab, "a");
-
-    if(tab_file == NULL){
-      printf("Relação de tabelas não abriu!\n");
-    }
-    i=0;
-    do{
-        campoOK=1;
-        conversao_tipos(tab.tipos[i], str_temp);
-		printf("Insira o campo %s (tipo: %s )\n", tab.tab_L[i],str_temp);
-		scanf(" %[^\n]s", str_temp);
-        if(i==0){
-	       	for(int j=0; j<strlen(str_temp); j++){
-				if(isdigit(str_temp[j]) == 0){ 
-                             campoOK=0;
-                             printf("O parametro tem que ser do tipo INT\n");
-			     			 break;
- 				}		    	
-            }
-		
-		if(campoOK && strlen(str_temp) > 10){ //10 digitos é o tamanho máximo de um unsigned int
-			campoOK=0;
-			printf("Erro! Parametro não cabe em um inteiro\n");
-		}
-        }
-	
-        if(campoOK){
-        	i++;
-  			fprintf(tab_file, "%s;", str_temp);
-		}
-    }while(i<tab.C);
-    fprintf(tab_file,"\n");
-
-
-    if(tab_file == NULL){
-      printf("Relação de tabelas não abriu!\n");
-    }
-    else{
-     fclose(tab_file);
+  //Leia a linha de tipos
+  for(i=0; i<tab.C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    sscanf(str_temp,"%d", &temp);
+    fgetc(tab_file);
+    tab.tipos[i]=temp;
+    //printf("%s %d\n", str_temp, tab.tipos[i]);
   }
-   
+
+  //Leia a linha dos campos
+  for(i=0; i<tab.C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    fgetc(tab_file);
+    strcpy(tab.tab_L[i], str_temp);
+    //printf("temp: %s  tab.tab_L: %s\n", str_temp, tab.tab_L[i]);
+  }
+  fclose(tab_file);
+
+  i=0;
+  do{
+    campoOK=1;
+ 
+    conversao_tipos(tab.tipos[i], str_temp);
+    printf("Insira o campo %s (tipo: %s )\n", tab.tab_L[i],str_temp);
+    scanf(" %[^\n]s", str_temp);
+    
+    if(i==0){
+      // cheque se chave passada é um unsigned int
+      for(int j=0; j<strlen(str_temp); j++){
+	if(isdigit(str_temp[j]) == 0){ 
+	  campoOK=0;
+	  printf("ERRO: campo passado precisa ser do tipo INT.\n");
+	  break;
+	}		    	
+      }
+		
+      if(campoOK){
+	if(strlen(str_temp)>10){ //10 digitos é o tamanho máximo de um unsigned int
+	  campoOK=0;
+	  printf("ERRO: campo passado não cabe em um unsigned int.\n");
+
+	} else{
+	  // checagem se id é único
+	  tab_file = fopen(nome_tab, "r");
+	  if(tab_file == NULL)
+	    printf("Tabela não abriu!\n");
+      
+	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
+	    fscanf(tab_file, " %*[^\n]s");
+	    if(strcmp(str_temp,id_file)==0){
+	      printf("ERRO: ID %s já existe!\n",str_temp);
+	      campoOK=0;
+	      break;
+	    }
+	    //  printf("id: %s\n",id_file);
+	  }
+
+	  fclose(tab_file);
+	}	
+      }
+    } 
+	
+    if(campoOK){
+    i++;
+    
+    tab_file = fopen(nome_tab, "a");
+    if(tab_file == NULL)
+      printf("Tabela não abriu!\n");
+      
+    fprintf(tab_file, "%s;", str_temp);
+    fclose(tab_file);
+    }
+  } while(i<tab.C);
+
+  tab_file = fopen(nome_tab, "a");
+  if(tab_file == NULL)
+    printf("Tabela não abriu!\n");
+  
+  fprintf(tab_file,"\n");
+  fclose(tab_file);
+  
 }
+
 void editar_tab(char nome_tab[50], char aux[10], int n){
 	FILE *tab_file;
     int temp, temp2;
@@ -439,29 +466,23 @@ int main(void) {
         }
       }
 
-
       fclose(relacao_file);
-      if(existe){
+      if(existe)
       	editar_tab(input, aux, temp2);
-      }
-      else{
-       printf("Tabela não existe!\n");
-       break;
-      }
-
+      else
+	printf("Tabela não existe!\n");
+      
+      break;
     case 's':
       printf("Tchau!\n");
       continua=0;
       break;
-      
-      
     default:
       printf("Opção inválida. \n");
       break;
-   
-	}
-	}while(continua);
-		return 0;
+    }
+  } while(continua);
+  return 0;
 }
 
 
