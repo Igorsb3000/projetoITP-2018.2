@@ -1,3 +1,8 @@
+/* Problemas:
+- Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
+
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -174,7 +179,7 @@ void insereLinha_tab(char nome_tab[50], int n){
   FILE *tab_file;
   int temp;
   char str_temp[50], id_file[50];
-  int i;
+  int i,j;
   int campoOK; //bool
   
   tabela tab;
@@ -183,7 +188,7 @@ void insereLinha_tab(char nome_tab[50], int n){
 
   //alocando vetores da struct
   tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
-  for(int j=0; j<tab.C; j++)
+  for(j=0; j<tab.C; j++)
     tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
   
   tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
@@ -221,7 +226,7 @@ void insereLinha_tab(char nome_tab[50], int n){
     
     if(i==0){
       // cheque se chave passada é um unsigned int
-      for(int j=0; j<strlen(str_temp); j++){
+      for(j=0; j<strlen(str_temp); j++){
 	if(isdigit(str_temp[j]) == 0){ 
 	  campoOK=0;
 	  printf("ERRO: campo passado precisa ser do tipo INT.\n");
@@ -240,15 +245,15 @@ void insereLinha_tab(char nome_tab[50], int n){
 	  if(tab_file == NULL)
 	    printf("Tabela não abriu!\n");
 	  
-	  fscanf(tab_file, " %*[^\n]s"); //pule linha de tipos
-	  fscanf(tab_file, " %*[^\n]s"); //pule linha de campos
+	  j=0; //pule linha de tipos e campos do arquivo
 	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
 	    fscanf(tab_file, " %*[^\n]s");
-	    if(strcmp(str_temp,id_file)==0){
+	    if(j>1 && strcmp(str_temp,id_file)==0){ 
 	      printf("ERRO: ID %s já existe!\n",str_temp);
 	      campoOK=0;
 	      break;
 	    }
+	    j++;
 	  }
 
 	  fclose(tab_file);
