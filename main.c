@@ -75,8 +75,8 @@ void cria_tab(){
     campoOK=1;
     for(int i=0; i<j; i++){
       if(strcmp(tabela_user.tab_L[i],nome_campo)==0){
-		campoOK=0;
-		break;
+	campoOK=0;
+	break;
       }
     }
 	
@@ -85,9 +85,9 @@ void cria_tab(){
     } else if(!campoOK){ 
       printf("Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
     }else{      
-		strcpy(tabela_user.tab_L[j],nome_campo);
-		tabela_user.tipos[j]=tipo_campo;
-		j++;
+      strcpy(tabela_user.tab_L[j],nome_campo);
+      tabela_user.tipos[j]=tipo_campo;
+      j++;
     }
 
   }while(j<tabela_user.C);
@@ -240,6 +240,8 @@ void insereLinha_tab(char nome_tab[50], int n){
 	  if(tab_file == NULL)
 	    printf("Tabela não abriu!\n");
       
+	  fscanf(tab_file, " %*[^\n]s"); //pule linha de tipos
+	  fscanf(tab_file, " %*[^\n]s"); //pule linha de campos
 	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
 	    fscanf(tab_file, " %*[^\n]s");
 	    if(strcmp(str_temp,id_file)==0){
@@ -247,7 +249,6 @@ void insereLinha_tab(char nome_tab[50], int n){
 	      campoOK=0;
 	      break;
 	    }
-	    //  printf("id: %s\n",id_file);
 	  }
 
 	  fclose(tab_file);
@@ -279,7 +280,7 @@ void insereLinha_tab(char nome_tab[50], int n){
 void editar_tab(char nome_tab[50], char aux[10], int n){
 	FILE *tab_file;
     int temp, temp2;
-    char str_temp[50];
+    char str_temp[50], id_file[50];
     int i;
     int campo_OK; //bool
     char aux2[10];
@@ -394,6 +395,33 @@ void editar_tab(char nome_tab[50], char aux[10], int n){
     for(i=0; i<tab.C; i++)
     	if(strcmp(tab.tab_L[i], aux)==0 && )
  */
+
+    fpos_t posicao;
+
+    //teste de edição de arquivo
+    printf("\n\n*** Meu teste ***\n\n");
+    tab_file = fopen(nome_tab, "r+");
+    if(tab_file == NULL)
+      printf("Tabela não abriu!\n");
+    
+    i=0;
+    while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
+      if(strcmp(aux,id_file)==0){
+	printf("Encontrei o ID %s!\n",aux);
+	fgetc(tab_file);
+	fgetpos(tab_file,&posicao);
+       
+	fsetpos(tab_file,&posicao);
+	fprintf(tab_file,"%s","ESTRAGO");
+	break;
+      }
+      printf("Li linha %d do aquivo %s.\n",i,nome_tab);
+      fscanf(tab_file, " %*[^\n]s");
+      i++;
+    }
+
+    fclose(tab_file);
+
 
   }
 
