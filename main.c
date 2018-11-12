@@ -24,7 +24,7 @@ void listagem_tab(){
   int n;
 
 
-  printf("Tabelas existentes:\n");
+  printf("\n *** Tabelas existentes ***\n");
 
   relacao_file = fopen("relacaoTab", "r");
 
@@ -276,20 +276,17 @@ void insereLinha_tab(char nome_tab[50], int n){
   fclose(tab_file);
   
 }
-<<<<<<< HEAD
+
 void editar_tab(char nome_tab[50], int n){ //, char aux[10]
-=======
 
-void editar_tab(char nome_tab[50], char aux[10], int n){
->>>>>>> ec7a0e3fc3afa979a38488cf8be146cff75495a2
-	FILE *tab_file;
-    int temp, temp2;
-    char str_temp[50], id_file[50];
-    int i;
-    int campo_OK; //bool
-    char aux2[10];
+  FILE *tab_file;
+  int temp, temp2;
+  char str_temp[50], id_file[50];
+  int i;
+  int campo_OK; //bool
+  char aux2[10];
 
-    tabela tab; //tipo struct tabela_t
+  tabela tab; //tipo struct tabela_t
 
     strcpy(tab.nome, nome_tab); 
     tab.C=n;
@@ -408,8 +405,8 @@ void editar_tab(char nome_tab[50], char aux[10], int n){
     
     i=0;
     while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
-      if(strcmp(aux,id_file)==0){
-	printf("Encontrei o ID %s!\n",aux);
+      if(strcmp(chave_user,id_file)==0){
+	printf("Encontrei o ID %s!\n",chave_user);
 	fgetc(tab_file);
 	fgetpos(tab_file,&posicao);
        
@@ -495,26 +492,14 @@ int main(void) {
         
         }
       }
-<<<<<<< HEAD
-      fclose(relacao_file);
-      if(existe){
-      	editar_tab(input, temp2);
-      }
-      else{
-       printf("Tabela não existe!\n");
-       break;
-      }
-
-=======
 
       fclose(relacao_file);
       if(existe)
-      	editar_tab(input, aux, temp2);
+      	editar_tab(input, temp2);
       else
 	printf("Tabela não existe!\n");
       
       break;
->>>>>>> ec7a0e3fc3afa979a38488cf8be146cff75495a2
     case 's':
       printf("Tchau!\n");
       continua=0;
