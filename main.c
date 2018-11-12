@@ -1,14 +1,23 @@
-/* Problemas:
+/* 
+Problemas:
 - Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
 
+Melhorias:
+- coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
+- Minimizar a abertura de arquivos
+- Mensagens de error de abertura de tabela mostram qual a linha e param o código
+
+Dúvidas:
+- No insereLinha_tab(), estamos conferindo se string passada é compatível com tipo do campo. Estamos fazendo da melhor maneira?
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-enum tipos_tab{ int_=1, float_, double_, char_, string_};
+#include <limits.h> // macros dos limites dos tipos int, uint, char, entre outros
 
+enum tipos_tab{int_=1, float_, double_, char_, string_};
 
 typedef struct tabela_t{
   char nome[50];
@@ -17,10 +26,88 @@ typedef struct tabela_t{
   enum tipos_tab *tipos; //char **tab_tipos; // tipos de cada campo da tabela
 }tabela;
 
+
 void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
   char tipos_all[][10]={"int", "float", "double", "char", "string"};
   strcpy(str_tipo, tipos_all[TIPO-1]);
 }
+
+
+// checagem se valor de campo é compatível com o tipo do campo
+int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
+  int campoOK=1; // bool
+  int i, n_pontos=0;
+  double x_temp;
+  char c_temp, tipo_temp[10];
+
+  //  printf("%d: %d\n",__LINE__,campoOK);
+  if(tipo_campo==int_){
+
+      if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
+	campoOK=0;
+      
+      for(i=1;i<strlen(campo);i++){
+	if(isdigit(campo[i])==0){ 
+	  campoOK=0;
+	  break;
+	}		    	
+      }
+      
+      if(campoOK){
+	sscanf(campo,"%lf",&x_temp);
+	if(x_temp<INT_MIN || x_temp>INT_MAX)
+	  campoOK=0;
+      }
+      
+    } else if(tipo_campo==float_){ 
+
+    if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
+      campoOK=0;
+    
+    for(i=1;i<strlen(campo);i++){
+      if(campo[i]=='.')
+	n_pontos++;
+      
+      if((isdigit(campo[i])==0 && campo[i]!='.') || n_pontos>1){ 
+	campoOK=0;
+	break;
+      }		    	
+    }
+    
+    } else if(tipo_campo==double_){ 
+
+    if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
+      campoOK=0;
+    
+    for(i=1;i<strlen(campo);i++){
+      if(campo[i]=='.')
+	n_pontos++;
+      
+      if((isdigit(campo[i])==0 && campo[i]!='.') || n_pontos>1){ 
+	campoOK=0;
+	break;
+      }		    	
+    }
+
+    } else if(tipo_campo==char_){
+      if(strlen(campo)>1 || isalpha(campo[0])==0)
+	campoOK=0;
+
+      if(campoOK){
+	sscanf(campo,"%c",&c_temp);
+	if(c_temp<CHAR_MIN || c_temp>CHAR_MAX)
+	  campoOK=0;
+      }
+    }
+
+  if(!campoOK){
+    conversao_tipos(tipo_campo,tipo_temp);
+    printf(">>> ERRO: Campo passado precisa ser do tipo %s.\n",tipo_temp);
+  }
+  
+  return campoOK;
+}
+
 
 //Função para listar todas tabelas
 void listagem_tab(){ 
@@ -73,7 +160,7 @@ void cria_tab(){
   j=0;
   do{
     tipo_campo=0;
-    printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 3-float\n 3-double\n 4-char\n 5-string\n\n", j+1);
+    printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 2-float\n 3-double\n 4-char\n 5-string\n\n", j+1);
     scanf(" %s %d", nome_campo, &tipo_campo); 
 
     // verifique que os campos inseridos são únicos		
@@ -177,28 +264,28 @@ void cria_tab(){
 
 void insereLinha_tab(char nome_tab[50], int n){
   FILE *tab_file;
-  int temp;
   char str_temp[50], id_file[50];
-  int i,j;
+  int i,j,temp;
   int campoOK; //bool
+  double x_temp;
   
   tabela tab;
   strcpy(tab.nome, nome_tab); 
   tab.C=n;
 
-  //alocando vetores da struct
-  tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
+  // alocando vetores da struct
+  tab.tab_L=malloc(sizeof(char*)*tab.C); // colunas alocadas
   for(j=0; j<tab.C; j++)
     tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
   
-  tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
+  tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); // vetor de enum alocado
 
 
   tab_file = fopen(nome_tab, "r");    
   if(tab_file == NULL)
     printf("Tabela não abriu!\n");
 
-  //Leia a linha de tipos
+  // Leia a linha de tipos
   for(i=0; i<tab.C; i++){
     fscanf(tab_file," %[^;]s", str_temp);
     sscanf(str_temp,"%d", &temp);
@@ -207,7 +294,7 @@ void insereLinha_tab(char nome_tab[50], int n){
     //printf("%s %d\n", str_temp, tab.tipos[i]);
   }
 
-  //Leia a linha dos campos
+  // Leia a linha dos campos
   for(i=0; i<tab.C; i++){
     fscanf(tab_file," %[^;]s", str_temp);
     fgetc(tab_file);
@@ -229,27 +316,27 @@ void insereLinha_tab(char nome_tab[50], int n){
       for(j=0; j<strlen(str_temp); j++){
 	if(isdigit(str_temp[j]) == 0){ 
 	  campoOK=0;
-	  printf("ERRO: campo passado precisa ser do tipo INT.\n");
+	  printf(">>> ERRO: campo ID precisa ser do tipo unsigned int.\n");
 	  break;
 	}		    	
       }
 		
       if(campoOK){
-	if(strlen(str_temp)>10){ //10 digitos é o tamanho máximo de um unsigned int
+	sscanf(str_temp,"%lf",&x_temp);
+	if(0>x_temp || x_temp>UINT_MAX){
 	  campoOK=0;
-	  printf("ERRO: campo passado não cabe em um unsigned int.\n");
-
+	  printf(">>> ERRO: campo passado não cabe em um unsigned int.\n");
 	} else{
 	  // checagem se id é único
 	  tab_file = fopen(nome_tab, "r");
 	  if(tab_file == NULL)
 	    printf("Tabela não abriu!\n");
 	  
-	  j=0; //pule linha de tipos e campos do arquivo
+	  j=0; // pule linha de tipos e campos do arquivo
 	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
 	    fscanf(tab_file, " %*[^\n]s");
 	    if(j>1 && strcmp(str_temp,id_file)==0){ 
-	      printf("ERRO: ID %s já existe!\n",str_temp);
+	      printf(">>> ERRO: ID %s já existe!\n",str_temp);
 	      campoOK=0;
 	      break;
 	    }
@@ -259,8 +346,10 @@ void insereLinha_tab(char nome_tab[50], int n){
 	  fclose(tab_file);
 	}	
       }
-    } 
-	
+    } else{
+      campoOK=checaLimite_campos(str_temp,tab.tipos[i]);
+    }
+    
     if(campoOK){
       i++;
     
@@ -271,6 +360,7 @@ void insereLinha_tab(char nome_tab[50], int n){
       fprintf(tab_file, "%s;", str_temp);
       fclose(tab_file);
     }
+    
   } while(i<tab.C);
 
   tab_file = fopen(nome_tab, "a");
