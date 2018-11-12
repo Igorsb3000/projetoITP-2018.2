@@ -1,6 +1,7 @@
 /* 
 Problemas:
 - Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
+-verificar na função checaLimite_campos se campo passado cabe no campo
 
 Melhorias:
 - coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
@@ -373,7 +374,7 @@ void insereLinha_tab(char nome_tab[50], int n){
 }
 
 void editar_tab(char nome_tab[50], int n){
-
+  
   FILE *tab_file;
   int temp, temp2;
   char str_temp[50], id_file[50];
@@ -418,67 +419,87 @@ void editar_tab(char nome_tab[50], int n){
     
   i=0; 
   tab_file = fopen(nome_tab, "r");
+  FILE *file_temp;
   int cont;
   int existe_id; //bool
   char chave[10];
-  char chave_user[10];
+  char chave_user[10],c_temp;
   int linha_id;
+  long int pos;
 
-  //Pede a chave primária(ID), caso não exista repete o processo
+  // Pede a chave primária(ID), caso não exista repete o processo
   do{ 
-    tab_file = fopen(nome_tab, "r");
+    tab_file = fopen(nome_tab, "r+");
     cont=0;
     printf("Insira o ID da linha: ");
-    scanf("%s", chave_user);
-    while(fscanf(tab_file," %[^\n]s", str_temp)!=EOF){ //AQUI 
-      cont++;
-      existe_id=0;
-      sscanf(str_temp," %[^;]s", aux2);
-    
+    scanf(" %s", chave_user);
+
+    existe_id=0;
+    while(fscanf(tab_file," %[^;]s", aux2)!=EOF){
       if(cont>=2 && strcmp(aux2, chave_user)==0){
 	existe_id=1;
-        linha_id=cont-1;
-        printf("Linha a editar: %d\n", linha_id);
+        linha_id=cont;
+        //printf("Linha a editar: %d\n", linha_id);
 	strcpy(chave,aux2);
-
+	pos=ftell(tab_file);
 	break;
       }
+      fscanf(tab_file, " %*[^\n]s");
+      cont++;
     }
-    fclose(tab_file);
-  }while(existe_id==0);
-  if(existe_id)
+
+  } while(!existe_id);
+  
+  if(existe_id){
     printf("Achei, o ID é: %s\n", chave);
-  else
-    printf("ID não existe!\n");
-    
-    
-  ///////////////////////////////////////////
-  fpos_t posicao;
+    rewind(tab_file);
 
-  //teste de edição de arquivo
-  printf("\n\n*** Meu teste ***\n\n");
-  tab_file = fopen(nome_tab, "r+");
-  if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
-    
-  i=0;
-  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
-    if(strcmp(chave_user,id_file)==0){
-      printf("Encontrei o ID %s!\n",chave_user);
-      fgetc(tab_file);
-      fgetpos(tab_file,&posicao);
-       
-      fsetpos(tab_file,&posicao);
-      fprintf(tab_file,"%s","ESTRAGO");
-      break;
+    // copia arquivo até id da linha que será editada 
+    file_temp=fopen("fileTemp","w+");
+    if(file_temp==NULL){
+      printf("Arquivo na linha %d não abriu!",__LINE__);
     }
-    printf("Li linha %d do aquivo %s.\n",i,nome_tab);
+
+    cont=0;
+    while(cont<=pos){
+      c_temp=fgetc(tab_file);
+      fprintf(file_temp,"%c",c_temp);
+      cont++;
+    }
+
+    // armazena linha conforme campos passados pelo usuário
+    i=1;
+    do{
+      printf("Entre com o campo %s (tipo: %d):",tab.tab_L[i],tab.tipos[i]);
+      scanf(" %[^\n]s",str_temp);
+      campo_OK=checaLimite_campos(str_temp,tab.tipos[i]);
+      if(campo_OK){
+	fprintf(file_temp,"%s;",str_temp);
+	i++;
+      }
+    }while(i<tab.C);
+  
+    fprintf(file_temp,"\n");
+    
+    // copia restante 
     fscanf(tab_file, " %*[^\n]s");
-    i++;
+    fgetc(tab_file);
+    while((c_temp=fgetc(tab_file))!=EOF){ 
+      fprintf(file_temp,"%c",c_temp);
+    }
+    
+    fclose(file_temp);
+    //fclose(tab_file); ?????????????
+    remove(tab.nome);
+    rename("fileTemp",tab.nome);
   }
+  else
+    printf(">>> ERRO: ID não existe!\n");
 
-  fclose(tab_file);
-
+  if(tab_file==NULL){
+    printf("Arquivo na linha %d não abriu!",__LINE__);  
+  } else
+    fclose(tab_file);
 
 }
 
