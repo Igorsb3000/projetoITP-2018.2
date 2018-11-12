@@ -13,8 +13,8 @@ typedef struct tabela_t{
 }tabela;
 
 void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
-     char tipos_all[][10]={"int", "float", "double", "char", "string"};
-     strcpy(str_tipo, tipos_all[TIPO-1]);
+  char tipos_all[][10]={"int", "float", "double", "char", "string"};
+  strcpy(str_tipo, tipos_all[TIPO-1]);
 }
 
 //Função para listar todas tabelas
@@ -103,10 +103,10 @@ void cria_tab(){
   
       // verificar se campo ID passado existe
       for(int j=0; j<tabela_user.C; j++){
-		if(strcmp(tabela_user.tab_L[j],nome_campo)==0){
-	  	campoOK=1;
-	  	j_id=j;
-	  	break;
+	if(strcmp(tabela_user.tab_L[j],nome_campo)==0){
+	  campoOK=1;
+	  j_id=j;
+	  break;
 	}
       }
 
@@ -239,7 +239,7 @@ void insereLinha_tab(char nome_tab[50], int n){
 	  tab_file = fopen(nome_tab, "r");
 	  if(tab_file == NULL)
 	    printf("Tabela não abriu!\n");
-      
+	  
 	  fscanf(tab_file, " %*[^\n]s"); //pule linha de tipos
 	  fscanf(tab_file, " %*[^\n]s"); //pule linha de campos
 	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
@@ -257,14 +257,14 @@ void insereLinha_tab(char nome_tab[50], int n){
     } 
 	
     if(campoOK){
-    i++;
+      i++;
     
-    tab_file = fopen(nome_tab, "a");
-    if(tab_file == NULL)
-      printf("Tabela não abriu!\n");
+      tab_file = fopen(nome_tab, "a");
+      if(tab_file == NULL)
+	printf("Tabela não abriu!\n");
       
-    fprintf(tab_file, "%s;", str_temp);
-    fclose(tab_file);
+      fprintf(tab_file, "%s;", str_temp);
+      fclose(tab_file);
     }
   } while(i<tab.C);
 
@@ -277,7 +277,7 @@ void insereLinha_tab(char nome_tab[50], int n){
   
 }
 
-void editar_tab(char nome_tab[50], int n){ //, char aux[10]
+void editar_tab(char nome_tab[50], int n){
 
   FILE *tab_file;
   int temp, temp2;
@@ -288,141 +288,104 @@ void editar_tab(char nome_tab[50], int n){ //, char aux[10]
 
   tabela tab; //tipo struct tabela_t
 
-    strcpy(tab.nome, nome_tab); 
-    tab.C=n;
+  strcpy(tab.nome, nome_tab); 
+  tab.C=n;
 
-    //alocando vetores da struct
-    tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
-    for(int j=0; j<tab.C; j++)
-    	tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
+  //alocando vetores da struct
+  tab.tab_L=malloc(sizeof(char*)*tab.C); //colunas alocadas
+  for(int j=0; j<tab.C; j++)
+    tab.tab_L[j]=malloc(sizeof(char)*50); // strings alocadas
   
-    tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
+  tab.tipos=malloc(sizeof(enum tipos_tab)*tab.C); //vetor de enum alocado
 
-    tab_file = fopen(nome_tab, "rw");
+  tab_file = fopen(nome_tab, "r+");
 
-    	//Leia a linha de tipos
-    	for(i=0; i<tab.C; i++){
-       		fscanf(tab_file," %[^;]s", str_temp);
-       		sscanf(str_temp,"%d", &temp);
-       		fgetc(tab_file);
-       		tab.tipos[i]=temp;
-       	}
+  //Leia a linha de tipos
+  for(i=0; i<tab.C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    sscanf(str_temp,"%d", &temp);
+    fgetc(tab_file);
+    tab.tipos[i]=temp;
+  }
       
-       		//Leia a linha dos campos
-    	for(i=0; i<tab.C; i++){
-       		fscanf(tab_file," %[^;]s", str_temp);
-       		fgetc(tab_file);
-       		strcpy(tab.tab_L[i], str_temp);
-       	}
+  //Leia a linha dos campos
+  for(i=0; i<tab.C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    fgetc(tab_file);
+    strcpy(tab.tab_L[i], str_temp);
+  }
        
-    fclose(tab_file);
-    tab_file = fopen(nome_tab, "a");
+  fclose(tab_file);
 
-    if(tab_file == NULL){
-      printf("Relação de tabelas não abriu!\n");
-    }
+  tab_file = fopen(nome_tab, "a");
+  if(tab_file == NULL)
+    printf("Relação de tabelas não abriu!\n");
+    
+  i=0; 
+  tab_file = fopen(nome_tab, "r");
+  int cont;
+  int existe_id; //bool
+  char chave[10];
+  char chave_user[10];
+  int linha_id;
 
-    i=0; 
+  //Pede a chave primária(ID), caso não exista repete o processo
+  do{ 
     tab_file = fopen(nome_tab, "r");
-    //printf("Coluna ID:\n");
-    int cont=0;
-    int existe_id;//bool
-    char chave[10];
-    char chave_user[10];
-    existe_id=0;
-    
-    do{ cont=0;
-
-    	printf("Insira o ID da linha: ");
-    	scanf("%s", chave_user);
-
+    cont=0;
+    printf("Insira o ID da linha: ");
+    scanf("%s", chave_user);
     while(fscanf(tab_file," %[^\n]s", str_temp)!=EOF){ //AQUI 
-    	cont++;
-    	printf("PASSOU \n");
-    	sscanf(str_temp," %[^;]s", aux2);
-    	//fscanf(tab_file, "%*[^\n]s");
-    	if(cont>=2 && strcmp(aux2, chave_user)==0){
-    		printf("PASSOU2\n");
-    		existe_id=1;
-    		strcpy(chave,aux2);
-    		break;
-    	}
-    	existe_id=0;
-    }
-	}while(existe_id==0);
-    printf("PASSOU 3\n");
-    if(existe_id)
-    	printf("Achei, o ID é: %s\n", chave);
-    else
-    	printf("ID não existe!\n");
-
-    	/*
-    	for(int i=0; i<strlen(str_temp); i++){
-
-			if(strcmp(str_temp, aux)==0)
-    		printf("O ID é: %s", str_temp);
-    	}
-    	printf("%s\n", str_temp);
-    }
-    printf("\n"); */
-
-/*
-    for(i=0; i<tab.C; i++){
-    	fscanf(tab_file," %[^\n]s", str_temp);
-    	fgetc(tab_file);
-    	strcpy(tab.tab_L[i], str_temp);
-    	printf("%s", tab.tab_L[i]);
-    	printf("\n");
-
-    	//if(strcmp(str_temp, aux)==0){
-    	//	printf("Achou!\n");
-    	//}
-
-    }
-    printf("\n");
-    fclose(tab_file);
-
-
-  relacao_file = fopen("relacaoTab", "r");
-
-  while(fscanf(tab_file,"%s %*d\n",nome)!=EOF){ //enquanto não for End of File, continue imprimindo
-    printf("%s\n",nome);
-  } */
+      cont++;
+      existe_id=0;
+      sscanf(str_temp," %[^;]s", aux2);
     
+      if(cont>=2 && strcmp(aux2, chave_user)==0){
+	existe_id=1;
+        linha_id=cont-1;
+        printf("Linha a editar: %d\n", linha_id);
+	strcpy(chave,aux2);
 
-    
-
-
-    
-
-    fpos_t posicao;
-
-    //teste de edição de arquivo
-    printf("\n\n*** Meu teste ***\n\n");
-    tab_file = fopen(nome_tab, "r+");
-    if(tab_file == NULL)
-      printf("Tabela não abriu!\n");
-    
-    i=0;
-    while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
-      if(strcmp(chave_user,id_file)==0){
-	printf("Encontrei o ID %s!\n",chave_user);
-	fgetc(tab_file);
-	fgetpos(tab_file,&posicao);
-       
-	fsetpos(tab_file,&posicao);
-	fprintf(tab_file,"%s","ESTRAGO");
 	break;
       }
-      printf("Li linha %d do aquivo %s.\n",i,nome_tab);
-      fscanf(tab_file, " %*[^\n]s");
-      i++;
     }
-
     fclose(tab_file);
+  }while(existe_id==0);
+  if(existe_id)
+    printf("Achei, o ID é: %s\n", chave);
+  else
+    printf("ID não existe!\n");
+    
+    
+  ///////////////////////////////////////////
+  fpos_t posicao;
 
-
+  //teste de edição de arquivo
+  printf("\n\n*** Meu teste ***\n\n");
+  tab_file = fopen(nome_tab, "r+");
+  if(tab_file == NULL)
+    printf("Tabela não abriu!\n");
+    
+  i=0;
+  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
+    if(strcmp(chave_user,id_file)==0){
+      printf("Encontrei o ID %s!\n",chave_user);
+      fgetc(tab_file);
+      fgetpos(tab_file,&posicao);
+       
+      fsetpos(tab_file,&posicao);
+      fprintf(tab_file,"%s","ESTRAGO");
+      break;
+    }
+    printf("Li linha %d do aquivo %s.\n",i,nome_tab);
+    fscanf(tab_file, " %*[^\n]s");
+    i++;
   }
+
+  fclose(tab_file);
+
+
+}
 
 
 int main(void) {
@@ -455,41 +418,35 @@ int main(void) {
       listagem_tab();
       break;
     case '3':
-      //checa_tab();
       printf("Qual a tabela que deseja acessar?\n");
       scanf(" %s",input);
       relacao_file = fopen("relacaoTab", "r");
       
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &temp)!=EOF){ //enquanto não for End of File, continue imprimindo
-       if(strcmp(str_aux, input)==0){
-	      existe=1;
-        break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
       fclose(relacao_file);
-      if(existe){
-        insereLinha_tab(input, temp);
-      }
-      else{
-       printf("Tabela não existe!\n");
-      }
-      break;
-    
 
+      if(existe)
+        insereLinha_tab(input, temp);
+      else
+	printf("Tabela não existe!\n");
+
+      break;
     case '4':
       printf("Qual a tabela que deseja acessar?\n");
       scanf(" %s",input);
       
-      //printf("Qual o ID da linha?\n");
-      //scanf("%s", aux);
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
-      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue imprimindo
-       if(strcmp(str_aux, input)==0){
-       	  	existe=1;
-       	  	break;
-        
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue 
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
 
@@ -508,7 +465,9 @@ int main(void) {
       printf("Opção inválida. \n");
       break;
     }
+
   } while(continua);
+
   return 0;
 }
 
