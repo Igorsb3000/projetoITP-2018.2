@@ -1,7 +1,11 @@
 /* 
 Problemas:
 - Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
--verificar na função checaLimite_campos se campo passado cabe no campo
+- verificar na função checaLimite_campos se campo passado cabe no campo: caso float e double (não é assim que faz...)
+- definir tamanho máximo dos campos com uma constante
+- testar/implementar funções aloca/fill_struct
+- fazer a cópia de arquivo no edita_linha mais eficiente
+- impedir que se crie tabela que já existe
 
 Melhorias:
 - coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
@@ -27,6 +31,62 @@ typedef struct tabela_t{
   enum tipos_tab *tipos; //char **tab_tipos; // tipos de cada campo da tabela
 }tabela;
 
+tabela *alocaStruct_tab(int col){ // NÃO FOI TESTADA/IMPLEMENTADA
+  int i;
+  tabela *tab;
+
+  tab=malloc(sizeof(tabela));
+  
+  //alocando vetores da struct
+  tab->tab_L=malloc(sizeof(char*)*col); //colunas alocadas
+  for(i=0; i<col; i++)
+    tab->tab_L[i]=malloc(sizeof(char)*50); // strings alocadas
+  
+  tab->tipos=malloc(sizeof(enum tipos_tab)*col); //vetor de enum alocado
+
+  return tab;
+}
+
+void fillStruct_tab(tabela *tab, char nome_tab[50], int col){ // NÃO FOI TESTADA/IMPLEMENTADA
+  FILE *tab_file;
+  int i,temp;
+  char str_temp[50];
+  
+  strcpy(tab->nome, nome_tab); 
+  tab->C=col;
+
+  tab_file = fopen(nome_tab, "r");    
+  if(tab_file == NULL)
+    printf("Tabela não abriu!\n");
+
+  // Leia a linha de tipos
+  for(i=0; i<tab->C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    sscanf(str_temp,"%d", &temp);
+    fgetc(tab_file);
+    tab->tipos[i]=temp;
+  }
+
+  // Leia a linha dos campos
+  for(i=0; i<tab->C; i++){
+    fscanf(tab_file," %[^;]s", str_temp);
+    fgetc(tab_file);
+    strcpy(tab->tab_L[i], str_temp);
+  }
+  
+  fclose(tab_file);
+
+}
+
+void freeStruct_tab(tabela tab){
+  int j;
+  
+  for(int j=0; j<tab.C; j++)  
+    free(tab.tab_L[j]);
+
+  free(tab.tab_L);
+  free(tab.tipos);
+}
 
 void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
   char tipos_all[][10]={"int", "float", "double", "char", "string"};
@@ -109,7 +169,6 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
   return campoOK;
 }
 
-
 //Função para listar todas tabelas
 void listagem_tab(){ 
   FILE *relacao_file;
@@ -121,7 +180,7 @@ void listagem_tab(){
 
   relacao_file = fopen("relacaoTab", "r");
 
-  while(fscanf(relacao_file,"%s %*d\n",nome)!=EOF){ //enquanto não for End of File, continue imprimindo
+  while(fscanf(relacao_file,"%s %*d\n",nome)!=EOF){ // enquanto não for End of File, continue imprimindo
     printf("%s\n",nome);
   }
 
@@ -134,7 +193,7 @@ void listagem_tab(){
 
 }
 
-//Função para criar uma nova tabela
+// Função para criar uma nova tabela
 void cria_tab(){
   FILE *tabela_file, *relacao_file;
   tabela tabela_user;
@@ -143,8 +202,15 @@ void cria_tab(){
   int tipo_campo; 
   int campoOK, idOK; // bool
 
+  campoOK=0;
+  /*do{*/
   printf("Digite o nome da tabela: "); //printf("%d", __LINE__);
   scanf("%s", tabela_user.nome);
+  /*
+  
+  fclose()
+  } while(!campoOK);*/
+  
   strcat(tabela_user.nome,".tab");
   tabela_file = fopen(tabela_user.nome, "wr+"); 
 
@@ -174,9 +240,9 @@ void cria_tab(){
     }
 	
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
-      printf("ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n");
+      printf(">>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n");
     } else if(!campoOK){ 
-      printf("Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
+      printf(">>> ERRO: Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
     }else{      
       strcpy(tabela_user.tab_L[j],nome_campo);
       tabela_user.tipos[j]=tipo_campo;
@@ -215,7 +281,7 @@ void cria_tab(){
     if(tabela_user.tipos[j_id] == int_){
       idOK=1;
     } else{ 
-      printf("ID invalido. O ID da tabela precisa conter inteiros positivos (tipo int).\n");
+      printf(">>> ERRO: ID invalido. O ID da tabela precisa conter inteiros positivos (tipo int).\n");
     }
   
   }while(!idOK);
@@ -254,12 +320,8 @@ void cria_tab(){
     fclose(relacao_file);
   }
 
-  // fazer o free de tabela_user.tab
-  for(int j=0; j<tabela_user.C; j++)  
-    free(tabela_user.tab_L[j]);
-
-  free(tabela_user.tab_L);
-  free(tabela_user.tipos);
+  // fazer o free de tabela
+  freeStruct_tab(tabela_user);
 
 }
 
@@ -370,6 +432,9 @@ void insereLinha_tab(char nome_tab[50], int n){
   
   fprintf(tab_file,"\n");
   fclose(tab_file);
+
+  // fazer o free de tabela
+  freeStruct_tab(tab);
   
 }
 
@@ -501,6 +566,8 @@ void editar_tab(char nome_tab[50], int n){
   } else
     fclose(tab_file);
 
+  // fazer o free de tabela_user.tab
+  freeStruct_tab(tab);
 }
 
 
