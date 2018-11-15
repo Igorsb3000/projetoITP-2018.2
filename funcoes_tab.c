@@ -410,8 +410,6 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
 
   tabela *tab; //tipo struct tabela_t
 
-  
-
   tab=alocaStruct_tab(n);
 
   strcpy(tab->nome, nome_tab); 
@@ -446,9 +444,8 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", aux2)!=EOF){
       if(cont>=2 && strcmp(aux2, chave_user)==0){
-	       existe_id=1;
-        linha_id=cont;
-        //printf("Linha a editar: %d\n", linha_id);
+	     existe_id=1;
+         linha_id=cont;
 	     strcpy(chave,aux2);
 	     pos=ftell(tab_file);
 	     break;
@@ -517,7 +514,7 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
 
 void insereColuna_tab(char nome_tab[50], int n){
 
-	FILE *tab_file, *file_temp;
+	FILE *tab_file, *file_temp, *relacao_file;
   	char str_temp[50], id_file[50], nome_campo[50];
   	int i,j,temp, tipo_campo;
   	int campoOK; //bool
@@ -534,13 +531,14 @@ void insereColuna_tab(char nome_tab[50], int n){
   	printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 2-float\n 3-double\n 4-char\n 5-string\n\n", tab->C+1);
     scanf(" %s %d", nome_campo, &tipo_campo); 
     campoOK=1;
-
+    //verificar se o campo já existe
     	for(int i=0; i<tab->C; i++){
       		if(strcmp(tab->tab_L[i],nome_campo)==0){
         		campoOK=0;
         		break;
       }
     }
+    //verificar se o tipo é válido
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
       printf(">>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n");
     } else if(!campoOK){ 
@@ -564,104 +562,85 @@ void insereColuna_tab(char nome_tab[50], int n){
 
   char aux2[50];
   char str_tipo[10];
-  if(tipo_campo==1)
-  		strcpy(str_tipo, "1");
-  if(tipo_campo==2)
-  		strcpy(str_tipo, "2");
-  if(tipo_campo==3)
-  		strcpy(str_tipo, "3");
-  if(tipo_campo==4)
-  		strcpy(str_tipo, "4");
-  if(tipo_campo==5)
-  		strcpy(str_tipo, "5");
-
-  i=0;
-  //do{
-  	strcat(nome_campo, ";");
-  	strcat(str_tipo, ";");
-  	while(fscanf(tab_file," %[^\n]s", aux2)!=EOF){
-  		if(i==0)
-  			strcat(aux2, str_tipo);
-  			
-  		if(i==1)
-  			strcat(aux2, nome_campo);
-			
-  		if(i!=1 && i!=0)
-  			strcat(aux2, "NULL;");
-  		fgetc(tab_file);
-  		fprintf(file_temp, "%s", aux2);
-  		fprintf(file_temp,"\n");
-  		i++;
-
-      }
-
-      fclose(file_temp);
-      remove(tab->nome);
-      rename("fileTemp",tab->nome);
+  int cont;
+  long int pos;
+  char c_temp;
+  int campo_OK, num;;
   
-     if(tab_file==NULL){
-       printf("Arquivo na linha %d não abriu!",__LINE__);  
-     } else
-       fclose(tab_file);
-
-      // fazer o free de tabela_user.tab
-     freeStruct_tab(tab);
-  
-
-
-
-/*
-
-
     cont=0;
-
-    while(cont<=pos){
-      c_temp=fgetc(tab_file);
-      fprintf(file_temp,"%c",c_temp);
-      cont++;
-    }
-
-    // armazena linha conforme campos passados pelo usuário
-    i=1;
-    do{
-      printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
-      scanf(" %[^\n]s",str_temp);
-      campo_OK=checaLimite_campos(str_temp,tab->tipos[i]);
-      if(campo_OK){
-      fprintf(file_temp,"%s;",str_temp);
-      i++;
-      }
-    }while(i<tab->C);
-  
-    fprintf(file_temp,"\n");
+    i=0;
+    in
     
-    // copia restante 
-    fscanf(tab_file, " %*[^\n]s");
-    fgetc(tab_file);
-    while((c_temp=fgetc(tab_file))!=EOF){ 
-      fprintf(file_temp,"%c",c_temp);
-    }
-    
-    fclose(file_temp);
-    remove(tab->nome);
-    rename("fileTemp",tab->nome);
-  }
-  else
-    printf(">>> ERRO: ID não existe!\n");
+  	while(fscanf(tab_file," %[^;]s", aux2)!=EOF){ 
+  		fprintf(file_temp, "%s;", aux2);
+  		fgetc(tab_file);
 
-  if(tab_file==NULL){
-    printf("Arquivo na linha %d não abriu!",__LINE__);  
-  } else
-    fclose(tab_file);
+  		
+  		if(cont==tab->C-1 && i==0){
+  			cont=0;
+  			i++;
+  			fprintf(file_temp, "%d;", tipo_campo);
+  			fprintf(file_temp, "\n");
+  		}
 
-  // fazer o free de tabela_user.tab
-  freeStruct_tab(tab);
+  		if(cont==tab->C && i==1){
+  			cont=0;
+  			i++;
+  			fprintf(file_temp, "%s;", nome_campo);
+  			fprintf(file_temp, "\n");
+  			
+  		}
+  		if(cont==tab->C && i>1){
+  			cont=0;
+  			i++;
+  			fprintf(file_temp, "%s;", "NULL");
+  			fprintf(file_temp, "\n");
+  		}
+
+  		cont++;
+  	
+  		}
+  		fclose(file_temp);
+  		remove(tab->nome);
+    	rename("fileTemp",tab->nome);
+
+    	//>>>>>Falta criar um temporário e atualizar o arquivo relacaoTab<<<<<<	
+		/*
+    	char aux[50];
+    	relacao_file = fopen("relacaoTab", "r+");
+    	while(fscanf(relacao_file, " %s", aux2)!=EOF){
+    		sscanf(aux2, "%s %d", aux, &num);
+
+    		if(strcmp(aux, tab->nome)==0){
+    			fprintf(relacao_file, "%s %d", tab->nome, tab->C+1);
+    		}
+
+    	}
+    	fclose(relacao_file);
+
+    	relacao_file = fopen("relacaoTab", "a");
+  		fprintf(relacao_file,"%s %d\n",tab->nome, tab->C+1);	
+
+  		*/
+ 
+  		if(relacao_file == NULL){
+    		printf("Relação de tabelas não abriu!\n");
+  		}
+  		else{
+    		fclose(relacao_file);
+  		}
+
+  		// fazer o free de tabela
+  		freeStruct_tab(tab);
+
+
+ }
 
 
 //falta copiar os dados da tabela para um temporário e includir essa nova coluna
 
 //alterar o numero de colunas no arquivo relacaoTab */
-}
+
 
 
 
