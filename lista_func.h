@@ -33,5 +33,6 @@ void editar_tab(char nome_tab[50], int n);
 
 void insereColuna_tab(char nome_tab[50], int n);
 
+void listarDados_tab(char nome_tab[50], int n);
 
 

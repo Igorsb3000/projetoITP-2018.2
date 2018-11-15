@@ -21,7 +21,7 @@ int main(void) {
   char op;
   char input[50], str_aux[50];
   int continua, existe; //bool
-  int temp, temp2;
+  int colInput;
   char aux[10];
 
   printf("Bem vindo ao SGBD KI! - vs beta - \n");
@@ -35,6 +35,7 @@ int main(void) {
     printf("3 - Inserir linha em tabela\n");
     printf("4 - Editar linha de uma tabela\n");
     printf("5 - Inserir coluna em uma tabela\n");
+    printf("6 - Listar dados de uma tabela\n");
     printf("s - sair\n\n");
 
     scanf(" %c",&op);
@@ -52,7 +53,7 @@ int main(void) {
       relacao_file = fopen("relacaoTab", "r");
       
       existe=0;
-      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp)!=EOF){ //enquanto não for End of File, continue imprimindo
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
        if(strcmp(str_aux, input)==0){
          existe=1;
          break;
@@ -61,7 +62,7 @@ int main(void) {
       fclose(relacao_file);
 
       if(existe)
-        insereLinha_tab(input, temp);
+        insereLinha_tab(input, colInput);
       else
         printf("Tabela não existe!\n");
 
@@ -72,7 +73,7 @@ int main(void) {
       
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
-      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue 
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
        if(strcmp(str_aux, input)==0){
          existe=1;
          break;
@@ -81,7 +82,7 @@ int main(void) {
 
       fclose(relacao_file);
       if(existe)
-        editar_tab(input, temp2);
+        editar_tab(input, colInput);
       else
 	printf("Tabela não existe!\n");
       
@@ -92,7 +93,7 @@ int main(void) {
       
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
-      while(fscanf(relacao_file,"%s %d\n",str_aux, &temp2)!=EOF){ //enquanto não for End of File, continue 
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
        if(strcmp(str_aux, input)==0){
          existe=1;
          break;
@@ -101,7 +102,27 @@ int main(void) {
       fclose(relacao_file);
       
       if(existe)
-        insereColuna_tab(input, temp2);
+        insereColuna_tab(input, colInput);
+      else
+         printf("Tabela não existe!\n");
+      
+      break;
+    case '6':
+      printf("Qual a tabela que deseja acessar?\n");
+      scanf(" %s",input);
+      
+      relacao_file = fopen("relacaoTab", "r");
+      existe=0;
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
+       if(strcmp(str_aux, input)==0){
+         existe=1;
+         break;
+        }
+      }
+      fclose(relacao_file);
+      
+      if(existe)
+        listarDados_tab(input, colInput);
       else
          printf("Tabela não existe!\n");
       
