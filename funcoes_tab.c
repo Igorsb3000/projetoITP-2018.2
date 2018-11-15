@@ -31,7 +31,7 @@ void fillStruct_tab(tabela *tab, char nome_tab[50], int col){
 
   tab_file = fopen(nome_tab, "r");    
   if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
+    printf("\nALERTA: Tabela na linha %d não abriu!\n\n",__LINE__);
 
   // Leia a linha de tipos
   for(i=0; i<tab->C; i++){
@@ -319,13 +319,8 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
   
   tabela *tab;
  
-  tab=alocaStruct_tab(n);
-
-  tab_file = fopen(nome_tab, "r");    
-  if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
-  	
-  	fillStruct_tab(tab, nome_tab, n);
+  tab=alocaStruct_tab(n);  	
+  fillStruct_tab(tab, nome_tab, n);
 
   i=0;
   do{
@@ -340,7 +335,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     for(j=0; j<strlen(str_temp); j++){
 		if(isdigit(str_temp[j]) == 0){ 
 	  	campoOK=0;
-	  	printf(">>> ERRO: campo ID precisa ser do tipo unsigned int.\n");
+	  	printf("\n>>> ERRO: campo ID precisa ser do tipo unsigned int.\n\n");
 	  	break;
 	}		    	
       }
@@ -349,7 +344,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 	sscanf(str_temp,"%lf",&x_temp);
 	if(0>x_temp || x_temp>UINT_MAX){
 	  campoOK=0;
-	  printf(">>> ERRO: campo passado não cabe em um unsigned int.\n");
+	  printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
 	} else{
 	  // checagem se id é único
 	  tab_file = fopen(nome_tab, "r");
@@ -401,115 +396,89 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
 
 void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
-  FILE *tab_file;
+  FILE *tab_file,*file_temp;
   int temp, temp2;
   char str_temp[50], id_file[50];
-  int i;
-  int campo_OK; //bool
+  int i,cont;
+  int campo_OK,existe_id; //bool
   char aux2[10];
-
-  tabela *tab; //tipo struct tabela_t
-
-  
-
-  tab=alocaStruct_tab(n);
-
-  strcpy(tab->nome, nome_tab); 
-  tab->C=n;
-  
-  tab_file = fopen(nome_tab, "r+");
-  
-  fillStruct_tab(tab, nome_tab, n);
-
-
-  tab_file = fopen(nome_tab, "a");
-  if(tab_file == NULL)
-    printf("Relação de tabelas não abriu!\n");
-    
-  i=0; 
-  tab_file = fopen(nome_tab, "r");
-  FILE *file_temp;
-  int cont;
-  int existe_id; //bool
-  char chave[10];
-  char chave_user[10],c_temp;
+  char chave[10],chave_user[10],c_temp;
   int linha_id;
   long int pos;
 
+  tabela *tab; //tipo struct tabela_t
+
+  tab=alocaStruct_tab(n);  
+  fillStruct_tab(tab, nome_tab, n);
+
   // Pede a chave primária(ID), caso não exista repete o processo
+  tab_file = fopen(nome_tab, "r+");
   do{ 
-    tab_file = fopen(nome_tab, "r+");
-    cont=0;
     printf("Insira o ID da linha: ");
     scanf(" %s", chave_user);
 
+    cont=0;
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", aux2)!=EOF){
       if(cont>=2 && strcmp(aux2, chave_user)==0){
-	       existe_id=1;
+	existe_id=1;
         linha_id=cont;
         //printf("Linha a editar: %d\n", linha_id);
-	     strcpy(chave,aux2);
-	     pos=ftell(tab_file);
-	     break;
+	strcpy(chave,aux2);
+	pos=ftell(tab_file);
+	break;
       }
       fscanf(tab_file, " %*[^\n]s");
       cont++;
     }
 
+    if(existe_id)
+      printf("Achei o ID %s.\n", chave);
+    else
+      printf(">>> ERRO: ID não existe.\n");
+
+    rewind(tab_file);
   } while(!existe_id);
   
-  if(existe_id){
-    printf("Achei, o ID é: %s\n", chave);
-    rewind(tab_file);
-
-    // copia arquivo até id da linha que será editada 
-    file_temp=fopen("fileTemp","w+");
-    if(file_temp==NULL){
-      printf("Arquivo na linha %d não abriu!",__LINE__);
-    }
-
-    cont=0;
-    while(cont<=pos){
-      c_temp=fgetc(tab_file);
-      fprintf(file_temp,"%c",c_temp);
-      cont++;
-    }
-
-    // armazena linha conforme campos passados pelo usuário
-    i=1;
-    do{
-      printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
-      scanf(" %[^\n]s",str_temp);
-      campo_OK=checaLimite_campos(str_temp,tab->tipos[i]);
-      if(campo_OK){
-	    fprintf(file_temp,"%s;",str_temp);
-	    i++;
-      }
-    }while(i<tab->C);
-  
-    fprintf(file_temp,"\n");
     
-    // copia restante 
-    fscanf(tab_file, " %*[^\n]s");
-    fgetc(tab_file);
-    while((c_temp=fgetc(tab_file))!=EOF){ 
-      fprintf(file_temp,"%c",c_temp);
-    }
+  // copia arquivo até id da linha que será editada
+  file_temp=fopen("fileTemp","w+");
+  if(file_temp==NULL)
+    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
     
-    fclose(file_temp);
-    remove(tab->nome);
-    rename("fileTemp",tab->nome);
+  cont=0;
+  while(cont<=pos){
+    c_temp=fgetc(tab_file);
+    fprintf(file_temp,"%c",c_temp);
+    cont++;
   }
-  else
-    printf(">>> ERRO: ID não existe!\n");
 
-  if(tab_file==NULL){
-    printf("Arquivo na linha %d não abriu!",__LINE__);  
-  } else
-    fclose(tab_file);
+  // armazena linha conforme campos passados pelo usuário
+  i=1;
+  do{
+    printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
+    scanf(" %[^\n]s",str_temp);
+    campo_OK=checaLimite_campos(str_temp,tab->tipos[i]);
+    if(campo_OK){
+      fprintf(file_temp,"%s;",str_temp);
+      i++;
+    }
+  } while(i<tab->C);
+  fprintf(file_temp,"\n");
+    
+  // copia restante 
+  fscanf(tab_file, " %*[^\n]s");
+  fgetc(tab_file);
+  while((c_temp=fgetc(tab_file))!=EOF){ 
+    fprintf(file_temp,"%c",c_temp);
+  }
+    
+  fclose(file_temp);
+  fclose(tab_file);
 
-  // fazer o free de tabela_user.tab
+  remove(tab->nome);
+  rename("fileTemp",tab->nome);
+
   freeStruct_tab(tab);
 
 }
@@ -517,28 +486,27 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
 
 void insereColuna_tab(char nome_tab[50], int n){
 
-	FILE *tab_file, *file_temp;
-  	char str_temp[50], id_file[50], nome_campo[50];
-  	int i,j,temp, tipo_campo;
-  	int campoOK; //bool
-  	double x_temp;
+  FILE *tab_file, *file_temp;
+  char str_temp[50], id_file[50], nome_campo[50];
+  int i,j,temp, tipo_campo;
+  int campoOK; //bool
+  double x_temp;
   
-  	tabela *tab;
+  tabela *tab;
  
-  	tab=alocaStruct_tab(n+1);
-  	
-  	fillStruct_tab(tab, nome_tab, n);	
-
-  	do{
-  	tipo_campo=0;
-  	printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 2-float\n 3-double\n 4-char\n 5-string\n\n", tab->C+1);
+  tab=alocaStruct_tab(n+1);
+  fillStruct_tab(tab, nome_tab, n);	
+	
+  do{
+    tipo_campo=0;
+    printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 2-float\n 3-double\n 4-char\n 5-string\n\n", tab->C+1);
     scanf(" %s %d", nome_campo, &tipo_campo); 
     campoOK=1;
 
-    	for(int i=0; i<tab->C; i++){
-      		if(strcmp(tab->tab_L[i],nome_campo)==0){
-        		campoOK=0;
-        		break;
+    for(int i=0; i<tab->C; i++){
+      if(strcmp(tab->tab_L[i],nome_campo)==0){
+	campoOK=0;
+	break;
       }
     }
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
@@ -550,64 +518,70 @@ void insereColuna_tab(char nome_tab[50], int n){
       tab->tipos[tab->C]=tipo_campo;
     } 
 
-	}while(!campoOK);
-
+  }while(!campoOK);
   
   tab_file = fopen(nome_tab, "r"); 
-
   file_temp=fopen("fileTemp","w+");
   
-  if(file_temp==NULL){
+  if(file_temp==NULL || tab_file==NULL){
     printf("Arquivo na linha %d não abriu!",__LINE__);
   }
 
-
   char aux2[50];
   char str_tipo[10];
+  sprintf(str_tipo, "%d", tipo_campo);
+  printf("%s",str_tipo); 
+
+  /*
+   * Solução acima é mais curta
   if(tipo_campo==1)
-  		strcpy(str_tipo, "1");
+    strcpy(str_tipo, "1");
   if(tipo_campo==2)
-  		strcpy(str_tipo, "2");
+    strcpy(str_tipo, "2");
   if(tipo_campo==3)
-  		strcpy(str_tipo, "3");
+    strcpy(str_tipo, "3");
   if(tipo_campo==4)
-  		strcpy(str_tipo, "4");
+    strcpy(str_tipo, "4");
   if(tipo_campo==5)
-  		strcpy(str_tipo, "5");
+    strcpy(str_tipo, "5");
+  */
+
+
+
 
   i=0;
   //do{
-  	strcat(nome_campo, ";");
-  	strcat(str_tipo, ";");
-  	while(fscanf(tab_file," %[^\n]s", aux2)!=EOF){
-  		if(i==0)
-  			strcat(aux2, str_tipo);
+  strcat(nome_campo, ";");
+  strcat(str_tipo, ";");
+  while(fscanf(tab_file," %[^\n]s", aux2)!=EOF){
+    if(i==0)
+      strcat(aux2, str_tipo);
   			
-  		if(i==1)
-  			strcat(aux2, nome_campo);
+    if(i==1)
+      strcat(aux2, nome_campo);
 			
-  		if(i!=1 && i!=0)
-  			strcat(aux2, "NULL;");
-  		fgetc(tab_file);
-  		fprintf(file_temp, "%s", aux2);
-  		fprintf(file_temp,"\n");
-  		i++;
+    if(i>1)
+      strcat(aux2, "NULL;");
+    fgetc(tab_file);
+    fprintf(file_temp, "%s", aux2);
+    fprintf(file_temp,"\n");
+    i++;
 
-      }
+  }
 
-      fclose(file_temp);
-      remove(tab->nome);
-      rename("fileTemp",tab->nome);
+  fclose(file_temp);
+  remove(tab->nome);
+  rename("fileTemp",tab->nome);
   
-     if(tab_file==NULL){
-       printf("Arquivo na linha %d não abriu!",__LINE__);  
-     } else
-       fclose(tab_file);
+  if(tab_file==NULL){
+    printf("Arquivo na linha %d não abriu!",__LINE__);  
+  } else
+    fclose(tab_file);
 
-      // fazer o free de tabela_user.tab
-     freeStruct_tab(tab);
-  
 
+
+  freeStruct_tab(tab);
+ 
 
 
 /*
