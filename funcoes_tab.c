@@ -401,116 +401,86 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
 
 void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
-  FILE *tab_file;
-  int temp, temp2;
+ FILE *tab_file,*file_temp;
   char str_temp[50], id_file[50];
-  int i;
-  int campo_OK; //bool
-  char aux2[10];
+  int i,cont;
+  int campoOK,existe_id; //bool
+  char chave[10],chave_user[10],c_temp;
+  long int pos;
 
   tabela *tab; //tipo struct tabela_t
 
-  tab=alocaStruct_tab(n);
-
-  strcpy(tab->nome, nome_tab); 
-  tab->C=n;
-  
-  tab_file = fopen(nome_tab, "r+");
-  
+  tab=alocaStruct_tab(n);  
   fillStruct_tab(tab, nome_tab, n);
 
-
-  tab_file = fopen(nome_tab, "a");
-  if(tab_file == NULL)
-    printf("Relação de tabelas não abriu!\n");
-    
-  i=0; 
-  tab_file = fopen(nome_tab, "r");
-  FILE *file_temp;
-  int cont;
-  int existe_id; //bool
-  char chave[10];
-  char chave_user[10],c_temp;
-  int linha_id;
-  long int pos;
-
   // Pede a chave primária(ID), caso não exista repete o processo
+  tab_file = fopen(nome_tab, "r+");
   do{ 
-    tab_file = fopen(nome_tab, "r+");
-    cont=0;
     printf("Insira o ID da linha: ");
     scanf(" %s", chave_user);
 
+    cont=0;
     existe_id=0;
-    while(fscanf(tab_file," %[^;]s", aux2)!=EOF){
-      if(cont>=2 && strcmp(aux2, chave_user)==0){
-	     existe_id=1;
-         linha_id=cont;
-	     strcpy(chave,aux2);
-	     pos=ftell(tab_file);
-	     break;
+    while(fscanf(tab_file," %[^;]s", chave)!=EOF){
+      if(cont>=2 && strcmp(chave, chave_user)==0){
+	existe_id=1;
+	pos=ftell(tab_file);
+	break;
       }
       fscanf(tab_file, " %*[^\n]s");
       cont++;
     }
 
-  } while(!existe_id);
-  
-  if(existe_id){
-    printf("Achei, o ID é: %s\n", chave);
+    if(existe_id)
+      printf("Achei o ID %s.\n", chave);
+    else
+      printf(">>> ERRO: ID não existe.\n");
+
     rewind(tab_file);
-
-    // copia arquivo até id da linha que será editada 
-    file_temp=fopen("fileTemp","w+");
-    if(file_temp==NULL){
-      printf("Arquivo na linha %d não abriu!",__LINE__);
-    }
-
-    cont=0;
-    while(cont<=pos){
-      c_temp=fgetc(tab_file);
-      fprintf(file_temp,"%c",c_temp);
-      cont++;
-    }
-
-    // armazena linha conforme campos passados pelo usuário
-    i=1;
-    do{
-      printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
-      scanf(" %[^\n]s",str_temp);
-      campo_OK=checaLimite_campos(str_temp,tab->tipos[i]);
-      if(campo_OK){
-	    fprintf(file_temp,"%s;",str_temp);
-	    i++;
-      }
-    }while(i<tab->C);
-  
-    fprintf(file_temp,"\n");
+  } while(!existe_id);
     
-    // copia restante 
-    fscanf(tab_file, " %*[^\n]s");
-    fgetc(tab_file);
-    while((c_temp=fgetc(tab_file))!=EOF){ 
-      fprintf(file_temp,"%c",c_temp);
-    }
+  // copia arquivo até id da linha que será editada
+  file_temp=fopen("fileTemp","w+");
+  if(file_temp==NULL)
+    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
     
-    fclose(file_temp);
-    remove(tab->nome);
-    rename("fileTemp",tab->nome);
+  cont=0;
+  while(cont<=pos){
+    c_temp=fgetc(tab_file);
+    fprintf(file_temp,"%c",c_temp);
+    cont++;
   }
-  else
-    printf(">>> ERRO: ID não existe!\n");
 
-  if(tab_file==NULL){
-    printf("Arquivo na linha %d não abriu!",__LINE__);  
-  } else
-    fclose(tab_file);
+  // armazena linha conforme campos passados pelo usuário
+  i=1;
+  do{
+    printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
+    scanf(" %[^\n]s",str_temp);
+    campoOK=checaLimite_campos(str_temp,tab->tipos[i]);
+    if(campoOK){
+      fprintf(file_temp,"%s;",str_temp);
+      i++;
+    }
+  } while(i<tab->C);
+  fprintf(file_temp,"\n");
+    
+  // copia restante 
+  fscanf(tab_file, " %*[^\n]s");
+  fgetc(tab_file);
+  while((c_temp=fgetc(tab_file))!=EOF){ 
+    fprintf(file_temp,"%c",c_temp);
+  }
+    
+  fclose(file_temp);
+  fclose(tab_file);
 
-  // fazer o free de tabela_user.tab
+  remove(tab->nome);
+  rename("fileTemp",tab->nome);
+
   freeStruct_tab(tab);
 
-}
 
+}
 
 void insereColuna_tab(char nome_tab[50], int n){
 
@@ -641,5 +611,50 @@ void insereColuna_tab(char nome_tab[50], int n){
 //alterar o numero de colunas no arquivo relacaoTab */
 
 
+void listarDados_tab(char nome_tab[50], int n){
 
+  FILE *tab_file;
+  char str_temp[50];
+  int line,col,maior;
+  
+  tabela *tab;
+ 
+  tab=alocaStruct_tab(n);
+  fillStruct_tab(tab, nome_tab, n);	
+
+  tab_file=fopen(nome_tab,"r");
+  if(tab_file==NULL)
+    printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__);
+
+  maior=0;
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+    if(strlen(str_temp)>maior)
+      maior=strlen(str_temp);
+    fgetc(tab_file); // pule delimitador ; 
+  }
+
+  rewind(tab_file);
+  printf("\n***** TABELA %s *****\n",nome_tab);
+
+  line=0; col=0; 
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+    if(line>0)
+      printf("%-*s\t",maior+5,str_temp);
+    fgetc(tab_file); // pule delimitador ; 
+    col++;
+
+    if(col==tab->C){
+      printf("\n");
+      line++;
+      col=0;
+    }
+
+  }
+  printf("\n***** FIM *****\n\n");
+
+  fclose(tab_file);
+
+  freeStruct_tab(tab);
+}
 
