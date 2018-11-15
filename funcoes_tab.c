@@ -526,9 +526,6 @@ void insereColuna_tab(char nome_tab[50], int n){
   	tabela *tab;
  
   	tab=alocaStruct_tab(n+1);
-
-  	if(tab_file == NULL)
-    	printf("Tabela não abriu!\n");
   	
   	fillStruct_tab(tab, nome_tab, n);	
 
@@ -565,23 +562,50 @@ void insereColuna_tab(char nome_tab[50], int n){
   }
 
 
-  //falta copiar as linhas do arquivo e inserir coluna e tipo
-  /*
-  while(fscanf(tab_file," %[^;]s", aux2)!=EOF){
-      if(cont>=2 && strcmp(aux2, chave_user)==0){
-         existe_id=1;
-        linha_id=cont;
-        //printf("Linha a editar: %d\n", linha_id);
-       strcpy(chave,aux2);
-       pos=ftell(tab_file);
-       break;
-      }
-      fscanf(tab_file, " %*[^\n]s");
-      cont++;
-    }
-}
-*/
+  char aux2[50];
+  char str_tipo[10];
+  if(tipo_campo==1)
+  		strcpy(str_tipo, "1");
+  if(tipo_campo==2)
+  		strcpy(str_tipo, "2");
+  if(tipo_campo==3)
+  		strcpy(str_tipo, "3");
+  if(tipo_campo==4)
+  		strcpy(str_tipo, "4");
+  if(tipo_campo==5)
+  		strcpy(str_tipo, "5");
 
+  i=0;
+  //do{
+  	strcat(nome_campo, ";");
+  	strcat(str_tipo, ";");
+  	while(fscanf(tab_file," %[^\n]s", aux2)!=EOF){
+  		if(i==0)
+  			strcat(aux2, str_tipo);
+  			
+  		if(i==1)
+  			strcat(aux2, nome_campo);
+			
+  		if(i!=1 && i!=0)
+  			strcat(aux2, "NULL;");
+  		fgetc(tab_file);
+  		fprintf(file_temp, "%s", aux2);
+  		fprintf(file_temp,"\n");
+  		i++;
+
+      }
+
+      fclose(file_temp);
+      remove(tab->nome);
+      rename("fileTemp",tab->nome);
+  
+     if(tab_file==NULL){
+       printf("Arquivo na linha %d não abriu!",__LINE__);  
+     } else
+       fclose(tab_file);
+
+      // fazer o free de tabela_user.tab
+     freeStruct_tab(tab);
   
 
 
