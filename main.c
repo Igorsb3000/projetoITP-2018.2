@@ -33,8 +33,8 @@ int main(void) {
     printf("1 - Criar tabela\n");
     printf("2 - Listar tabelas existentes\n");
     printf("3 - Inserir linha em tabela\n");
-    printf("4 - Editar colunas da tabela\n");
-    printf("5 - Inserir coluna na tabela\n");
+    printf("4 - Editar linha de uma tabela\n");
+    printf("5 - Inserir coluna em uma tabela\n");
     printf("s - sair\n\n");
 
     scanf(" %c",&op);
@@ -83,7 +83,7 @@ int main(void) {
       if(existe)
         editar_tab(input, temp2);
       else
-         printf("Tabela não existe!\n");
+	printf("Tabela não existe!\n");
       
       break;
     case '5':
@@ -98,8 +98,8 @@ int main(void) {
          break;
         }
       }
-
       fclose(relacao_file);
+      
       if(existe)
         insereColuna_tab(input, temp2);
       else

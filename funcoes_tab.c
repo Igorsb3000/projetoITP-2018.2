@@ -569,7 +569,6 @@ void insereColuna_tab(char nome_tab[50], int n){
   
     cont=0;
     i=0;
-    in
     
   	while(fscanf(tab_file," %[^;]s", aux2)!=EOF){ 
   		fprintf(file_temp, "%s;", aux2);
