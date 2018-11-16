@@ -170,28 +170,42 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   FILE *tabela_file, *relacao_file;
   tabela *tabela_user;
   int i,j;
-  char nome_campo[50], nome_tab[50];
+  char nome_campo[50], nome_tab[50], str_temp[50];
   int tipo_campo, quant_campos; 
   int campoOK, idOK; // bool
 
+  
+  do{
+    campoOK=1;
+    printf("Digite o nome da tabela: "); 
+    scanf(" %s", nome_tab);  
+    strcat(nome_tab,".tab"); 
 
-  campoOK=0;
-  /*do{*/
-  printf("Digite o nome da tabela: "); //printf("%d", __LINE__);
-  scanf(" %s", nome_tab);  //tabela_user->nome
-  /*
+    relacao_file=fopen("relacaoTab","r");
+    if(relacao_file==NULL){
+      printf("\nPrimeira tabela criada no sistema.\n\n");
+      break;
+    }
+
+    while(fscanf(relacao_file," %s %*d",str_temp)!=EOF){
+      if(strcmp(nome_tab,str_temp)==0){
+	campoOK=0;
+	printf("\n>>> ERRO: tabela já existe.\n\n");
+	break;
+      }
+    }
+    
+    fclose(relacao_file);
+  } while(!campoOK);
   
-  fclose()
-  } while(!campoOK);*/
-  
-  strcat(nome_tab,".tab"); //tabela_user->nome
-  tabela_file = fopen(nome_tab,"wr+");  //tabela_user->nome,
+
+  tabela_file = fopen(nome_tab,"wr+");  
  
   printf("Quantos campos irá inserir?\n");
-  scanf("%d", &quant_campos);  //tabela_user->C
+  scanf("%d", &quant_campos);  
  
   //>>>>>alocando vetores da struct
-  tabela_user=alocaStruct_tab(quant_campos); //tabela_user->C
+  tabela_user=alocaStruct_tab(quant_campos); 
   strcpy(tabela_user->nome, nome_tab);
   tabela_user->C=quant_campos;
 
@@ -323,7 +337,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
   tab_file = fopen(nome_tab, "r");    
   if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
+    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
   	
   	fillStruct_tab(tab, nome_tab, n);
 
@@ -645,7 +659,7 @@ void listarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
     if(line>0)
-      printf("%-*s\t",maior+5,str_temp);
+      printf("%-*s ",maior+5,str_temp);
     fgetc(tab_file); // pule delimitador ; 
     col++;
 
