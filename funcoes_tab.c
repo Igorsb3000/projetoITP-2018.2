@@ -371,7 +371,14 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 	}	
       }
     } else{
-      campoOK=checaLimite_campos(str_temp,tab->tipos[i]);
+	      campoOK=checaLimite_campos(str_temp,tab->tipos[i]);
+	      if(tab->tipos[i] == string_){
+
+			if(strcmp(str_temp, "NULL")==0){
+				campoOK=0;
+				printf(">>>ERRO: string reservada pelo sistema.\n");
+			}
+	      }
     }
     
     if(campoOK){
@@ -535,7 +542,8 @@ void insereColuna_tab(char nome_tab[50], int n){
   int cont;
   long int pos;
   char c_temp;
-  int campo_OK, num;;
+  int campo_OK, num;
+  char aux[50];
   
     cont=0;
     i=0;
@@ -572,44 +580,41 @@ void insereColuna_tab(char nome_tab[50], int n){
   		fclose(file_temp);
   		remove(tab->nome);
     	rename("fileTemp",tab->nome);
+		
 
-    	//>>>>>Falta criar um temporário e atualizar o arquivo relacaoTab<<<<<<	
-		/*
-    	char aux[50];
-    	relacao_file = fopen("relacaoTab", "r+");
-    	while(fscanf(relacao_file, " %s", aux2)!=EOF){
-    		sscanf(aux2, "%s %d", aux, &num);
-
-    		if(strcmp(aux, tab->nome)==0){
-    			fprintf(relacao_file, "%s %d", tab->nome, tab->C+1);
-    		}
-
-    	}
-    	fclose(relacao_file);
-
-    	relacao_file = fopen("relacaoTab", "a");
-  		fprintf(relacao_file,"%s %d\n",tab->nome, tab->C+1);	
-
-  		*/
- 
-  		if(relacao_file == NULL){
+    	relacao_file = fopen("relacaoTab", "r");
+    
+    	if(relacao_file == NULL){
     		printf("Relação de tabelas não abriu!\n");
   		}
-  		else{
-    		fclose(relacao_file);
-  		}
+  		
 
+    	file_temp=fopen("fileTemp","w+");
+
+  		 //Copiando o arquivo relacaoTab para um temporário até a tabela a ser substituida
+		   while(fscanf(relacao_file," %s %d", aux2, &num)!=EOF){
+		     if(strcmp(aux2, nome_tab)==0){
+		     	fprintf(file_temp, "%s %d", aux2, num+1);
+		     	fprintf(file_temp, "\n");
+		     }else{
+		     fprintf(file_temp, "%s %d", aux2, num);
+		     fprintf(file_temp, "\n");
+		  	 }
+
+		    }
+		  
+		  if(file_temp==NULL)
+		    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
+		  
+  		
+    	fclose(relacao_file);
+  		remove("relacaoTab");
+    	rename("fileTemp","relacaoTab");
+  		
   		// fazer o free de tabela
   		freeStruct_tab(tab);
 
-
  }
-
-
-//falta copiar os dados da tabela para um temporário e includir essa nova coluna
-
-//alterar o numero de colunas no arquivo relacaoTab */
-
 
 void listarDados_tab(char nome_tab[50], int n){
 
