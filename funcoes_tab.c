@@ -209,12 +209,9 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   strcpy(tabela_user->nome, nome_tab);
   tabela_user->C=quant_campos;
 
-  int campo_idOK=0; //bool
-  int marcador_j;
   j=0;
   do{
     tipo_campo=0;
-    //campo_idOK=0;
     printf("\nInsira o campo[%d](sem espaços) e o seu tipo\n\n 1-int\n 2-float\n 3-double\n 4-char\n 5-string\n\n", j+1);
     scanf(" %s %d", nome_campo, &tipo_campo); 
 
@@ -228,18 +225,21 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
     }
 	
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
-      printf(">>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n");
+      printf("\n>>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n\n");
     } else if(!campoOK){ 
-      printf(">>> ERRO: Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
-    }else{      
+      printf("\n>>> ERRO: Campo já foi criado.\n\n"); 
+    } else if(j==(tab->C-1)){ // Se for o último campo, verifique se já existe algum campo inteiro
+      for(i=0;i<(tab->C-1);i++){
+	if(tabela_user->tipos[j]==int_)
+      }
+      
+    } else{      
       strcpy(tabela_user->tab_L[j],nome_campo);
       tabela_user->tipos[j]=tipo_campo;
       j++;
     }
 
-
   }while(j<tabela_user->C);
-
 
   // Criando campo de id
   int j_id;
@@ -260,7 +260,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
       }
 
       if(!campoOK){
-	printf("Campo inexistente. \nOs campos passados são: \n");
+	printf("\n>>> ERRO: Campo inexistente. \nOs campos passados são: \n\n");
 	for(int j=0; j<tabela_user->C; j++)
 	  printf("%s ",tabela_user->tab_L[j]);
 	printf("\n");
@@ -271,7 +271,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
     if(tabela_user->tipos[j_id] == int_){
       idOK=1;
     } else{ 
-      printf(">>> ERRO: ID invalido. O ID da tabela precisa conter inteiros positivos (tipo int).\n");
+      printf("\n>>> ERRO: ID invalido. O ID da tabela precisa conter inteiros positivos (tipo int).\n\n");
     }
   
   }while(!idOK);
