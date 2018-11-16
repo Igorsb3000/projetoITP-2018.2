@@ -1,17 +1,13 @@
 /* 
 Problemas:
 - Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
-- verificar na função checaLimite_campos se campo passado cabe no campo: caso float e double (não é assim que faz...)
 - definir tamanho máximo dos campos com uma constante
 - fazer a cópia de arquivo no edita_linha mais eficiente
-- impedir que se crie tabela que já existe
 
 Melhorias:
 - coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
 - Minimizar a abertura de arquivos
 - Mensagens de error de abertura de tabela mostram qual a linha e param o código
-Dúvidas:
-- No insereLinha_tab(), estamos conferindo se string passada é compatível com tipo do campo. Estamos fazendo da melhor maneira?
  */
 
 #include "lista_func.h"

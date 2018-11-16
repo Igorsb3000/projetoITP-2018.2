@@ -189,9 +189,9 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
 
     while(fscanf(relacao_file," %s %*d",str_temp)!=EOF){
       if(strcmp(nome_tab,str_temp)==0){
-	campoOK=0;
-	printf("\n>>> ERRO: tabela já existe.\n\n");
-	break;
+		campoOK=0;
+		printf("\n>>> ERRO: tabela já existe.\n\n");
+		break;
       }
     }
     
@@ -240,15 +240,6 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
 
   }while(j<tabela_user->C);
 
-/*
-  if(campo_idOK < 1){ // >>>>>>>>>>>>>>>>>>>AQUI<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	tabela_user->C = tabela_user->C + 1;
-	printf("Insira no campo [%s](sem espaços) um ID do tipo 1-int\n", tabela_user->tab_L[marcador_j]);
-	scanf(" %s %d", nome_campo, &tipo_campo);
-	strcpy(tabela_user->tab_L[marcador_j], nome_campo);
-	tabela_user->tipos[marcador_j]=tipo_campo;
-
-  } */
 
   // Criando campo de id
   int j_id;
