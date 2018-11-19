@@ -1,6 +1,5 @@
 /* 
 Problemas:
-- Código fica preso se na hora de escolher qual dos campos é o ID na função cria_tabela, nenhum dos campos fornecidos anteriormente for int. O código deve abortar e permitir que a pessoa tente criar a tabela novamente.
 - definir tamanho máximo dos campos com uma constante
 - fazer a cópia de arquivo no edita_linha mais eficiente
 
@@ -110,7 +109,8 @@ int main(void) {
       
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
-      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
+      while(fscanf(relacao_file," %s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue
+
        if(strcmp(str_aux, input)==0){
          existe=1;
          break;
@@ -121,7 +121,7 @@ int main(void) {
       if(existe)
         listarDados_tab(input, colInput);
       else
-         printf("Tabela não existe!\n");
+        printf("Tabela não existe!\n");
       
       break;
       case '7':
