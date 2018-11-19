@@ -172,7 +172,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   int i,j;
   char nome_campo[50], nome_tab[50], str_temp[50];
   int tipo_campo, quant_campos; 
-  int campoOK, idOK; // bool
+  int campoOK, idOK, id_int; // bool
 
   
   do{
@@ -219,27 +219,53 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
     campoOK=1;
     for(int i=0; i<j; i++){
       if(strcmp(tabela_user->tab_L[i],nome_campo)==0){
-	campoOK=0;
-	break;
+		campoOK=0;
+		break;
       }
     }
-	
+
+	id_int=0;
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
       printf("\n>>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n\n");
     } else if(!campoOK){ 
       printf("\n>>> ERRO: Campo já foi criado.\n\n"); 
-    } else if(j==(tab->C-1)){ // Se for o último campo, verifique se já existe algum campo inteiro
-      for(i=0;i<(tab->C-1);i++){
-	if(tabela_user->tipos[j]==int_)
-      }
+     }
+     /*
+
+     //>>>>>>>>>>>>>>>VERIFICAR SE TEM UM CAMPO DISPONIVEL PARA SER UM ID<<<<<<<<<<
+     
+     
+     else if(j==(tabela_user->C-1) && !id_int){ // Se for o último campo, verifique se já existe algum campo inteiro
+
+      for(i=0;i<j+2;i++){
+      	printf("PASSOU\n");
+      	printf("tipos: %d\n", tabela_user->tipos[0]);
+      	printf("tipos: %d\n", tabela_user->tipos[1]);
+
+		if(tabela_user->tipos[i]==1){ 
+			printf("PASSOU 2\n");
+			//printf("tipos: %d\n", tabela_user->tipos[i]);
+			id_int=1;
+			break;
+			}
+		else{
+			id_int=0;
+			printf("\n>>>> ERRO: Insira um campo obrigatoriamente do tipo int para ser o ID.\n\n");
+			break;
+			
+		}
+      } 
+
       
-    } else{      
+    }*/
+
+    else{      
       strcpy(tabela_user->tab_L[j],nome_campo);
       tabela_user->tipos[j]=tipo_campo;
       j++;
     }
 
-  }while(j<tabela_user->C);
+  }while(j<tabela_user->C); //&& !id_int
 
   // Criando campo de id
   int j_id;
@@ -552,7 +578,6 @@ void insereColuna_tab(char nome_tab[50], int n){
   
     cont=0;
     i=0;
-    
   	while(fscanf(tab_file," %[^;]s", aux2)!=EOF){ 
   		fprintf(file_temp, "%s;", aux2);
   		fgetc(tab_file);
@@ -581,7 +606,8 @@ void insereColuna_tab(char nome_tab[50], int n){
 
   		cont++;
   	
-  		}
+  	}
+
   		fclose(file_temp);
   		remove(tab->nome);
     	rename("fileTemp",tab->nome);
@@ -602,8 +628,8 @@ void insereColuna_tab(char nome_tab[50], int n){
 		     	fprintf(file_temp, "%s %d", aux2, num+1);
 		     	fprintf(file_temp, "\n");
 		     }else{
-		     fprintf(file_temp, "%s %d", aux2, num);
-		     fprintf(file_temp, "\n");
+		     	fprintf(file_temp, "%s %d", aux2, num);
+		     	fprintf(file_temp, "\n");
 		  	 }
 
 		    }
@@ -640,7 +666,7 @@ void listarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(strlen(str_temp)>maior)
       maior=strlen(str_temp);
-    fgetc(tab_file); // pule delimitador ; 
+      fgetc(tab_file); // pule delimitador ; 
   }
 
   rewind(tab_file);
@@ -649,10 +675,17 @@ void listarDados_tab(char nome_tab[50], int n){
   line=0; col=0; 
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-    if(line>0)
-      printf("%-*s ",maior+5,str_temp);
-    fgetc(tab_file); // pule delimitador ; 
-    col++;
+    if(line>0){
+    	if(strcmp(str_temp,"NULL")==0){
+    		printf("%-*s ",maior+5," ");
+    	}else{
+      		printf("%-*s ",maior+5,str_temp);
+      	}
+
+  	}
+
+      fgetc(tab_file); // pule delimitador ; 
+      col++;
 
     if(col==tab->C){
       printf("\n");
@@ -662,6 +695,71 @@ void listarDados_tab(char nome_tab[50], int n){
 
   }
   printf("\n***** FIM *****\n\n");
+
+  fclose(tab_file);
+
+  freeStruct_tab(tab);
+}
+
+void pesquisarDados_tab(char nome_tab[50], int n){
+
+	FILE *tab_file, *file_temp, *relacao_file;
+  	char str_temp[50], aux[50];
+  	int i,j,temp, tipo_campo, maior, col, line;
+  	int campoOK; //bool
+  	double x_temp;
+  
+  	tabela *tab;
+ 
+  	tab=alocaStruct_tab(n);
+  	
+  	fillStruct_tab(tab, nome_tab, n);
+
+ 	tab_file=fopen(nome_tab,"r");
+  	if(tab_file==NULL)
+    	printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
+
+    maior=0;
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+    if(strlen(str_temp)>maior)
+      maior=strlen(str_temp);
+    	fgetc(tab_file); // pule delimitador ; 
+  }
+
+  rewind(tab_file);
+  printf("\n***** COLUNAS DISPONÍVEIS *****\n");
+
+  line=0; col=0; 
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+    if(line==1)
+      	printf("%-*s ",maior+2,str_temp);
+    	fgetc(tab_file); // pule delimitador ; 
+    	col++;
+
+    if(col==tab->C){
+      printf("\n");
+      line++;
+      col=0;
+    }
+
+  }
+  printf("Digite a coluna para realizar a pesquisa: \n");
+  scanf(" %[^\n]s", aux);
+  rewind(tab_file);
+  line=0;
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+    if(line==1){
+    	if(strcmp(aux, str_temp)==0){
+    		printf("O campo escolhido foi: %s\n", aux);
+    	}
+    	fgetc(tab_file);
+    }else{
+    	fgetc(tab_file);
+    	line++;
+    	}
+	}
+
 
   fclose(tab_file);
 

@@ -32,6 +32,7 @@ int main(void) {
     printf("4 - Editar linha de uma tabela\n");
     printf("5 - Inserir coluna em uma tabela\n");
     printf("6 - Listar dados de uma tabela\n");
+    printf("7 - Pesquisar valor em uma tabela\n");
     printf("s - sair\n\n");
 
     scanf(" %c",&op);
@@ -123,6 +124,26 @@ int main(void) {
          printf("Tabela não existe!\n");
       
       break;
+      case '7':
+      printf("Qual a tabela que deseja acessar?\n");
+      scanf(" %s",input);
+      
+      relacao_file = fopen("relacaoTab", "r");
+      existe=0;
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
+       if(strcmp(str_aux, input)==0){
+         existe=1;
+         break;
+        }
+      }
+      fclose(relacao_file);
+      
+      if(existe)
+        pesquisarDados_tab(input, colInput);
+      else
+         printf("Tabela não existe!\n");
+      
+      break;
     case 's':
       printf("Tchau!\n");
       continua=0;
@@ -136,3 +157,4 @@ int main(void) {
 
   return 0;
 }
+
