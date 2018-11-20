@@ -74,7 +74,6 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
   double x_temp;
   char c_temp, tipo_temp[10];
 
-  //  printf("%d: %d\n",__LINE__,campoOK);
   if(tipo_campo==int_){
 
       if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
@@ -688,29 +687,32 @@ void listarDados_tab(char nome_tab[50], int n){
   freeStruct_tab(tab);
 }
 
-void pesquisarDados_tab(char nome_tab[50], int n){
-
-	FILE *tab_file, *file_temp, *relacao_file;
-  	char str_temp[50], aux[50];
-  	int i,j,temp, tipo_campo, maior, col, line;
-  	int campoOK; //bool
-  	double x_temp;
+int pesquisarDados_tab(char nome_tab[50], int n){
   
-  	tabela *tab;
+  FILE *tab_file;
+  char str_temp[50], aux[50];
+  int campoOK; //bool
+  int i,j, op, tipo_campo, col, line;
+  int usr_int,tab_int;
+  float usr_float,tab_float;
+  double usr_double,tab_double;
+  char usr_char,tab_char;
+  
+  tabela *tab;
  
-  	tab=alocaStruct_tab(n);
+  tab=alocaStruct_tab(n);
   	
-  	fillStruct_tab(tab, nome_tab, n);
+  fillStruct_tab(tab, nome_tab, n);
 
- 	tab_file=fopen(nome_tab,"r");
-  	if(tab_file==NULL)
-    	printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
+  tab_file=fopen(nome_tab,"r");
+  if(tab_file==NULL)
+    printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
 
-    maior=0;
+  maior=0;
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(strlen(str_temp)>maior)
       maior=strlen(str_temp);
-    	fgetc(tab_file); // pule delimitador ; 
+    fgetc(tab_file); // pule delimitador ; 
   }
 
   rewind(tab_file);
@@ -720,9 +722,9 @@ void pesquisarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
     if(line==1)
-      	printf("%-*s ",maior+2,str_temp);
-    	fgetc(tab_file); // pule delimitador ; 
-    	col++;
+      printf("%-*s ",maior+2,str_temp);
+    fgetc(tab_file); // pule delimitador ; 
+    col++;
 
     if(col==tab->C){
       printf("\n");
@@ -733,23 +735,90 @@ void pesquisarDados_tab(char nome_tab[50], int n){
   }
   printf("Digite a coluna para realizar a pesquisa: \n");
   scanf(" %[^\n]s", aux);
+  
   rewind(tab_file);
-  line=0;
+  campoOK=0;
+  line=0; col=0;
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(line==1){
-    	if(strcmp(aux, str_temp)==0){
-    		printf("O campo escolhido foi: %s\n", aux);
-    	}
-    	fgetc(tab_file);
-    }else{
-    	fgetc(tab_file);
-    	line++;
-    	}
-	}
-
-
+      if(strcmp(aux, str_temp)==0){
+	campoOK=1;
+	tipo_campo=tab->tipos[col];
+	printf("O campo escolhido foi: %s, tipo %d\n", aux, tipo_campo);
+	break;
+      }
+    }
+    fgetc(tab_file); // pule delimitador ;
+    
+    if(col==tab->C-1){
+      line++;
+      col=-1;
+    }
+    col++;
+  }
   fclose(tab_file);
+  
+  if(!campoOK){
+    printf("\n>>> ERRO: campo inválido.\n");
+    freeStruct_tab(tab);
+    return 0;
+  }
 
+  printf("\n *** MENU ***\n");
+  printf("\n 1 - Valores maior que o valor informado");
+  printf("\n 2 - Valores maior ou igual que o valor informado");
+  printf("\n 3 - Valores igual ao valor informado");
+  printf("\n 4 - Valores menor que o valor informado");
+  printf("\n 5 - Valores menor ou igual que o valor informado");
+
+  printf("\n\n Selecione a operação desejada e informe um valor para comparação: ");
+  scanf("%d %s", &op, str_temp);
+
+  switch(tipo_campo){ /// CORREÇÃO: passar valor tipo_campo para enum
+  case 1:
+    
+    sscanf(str_temp,"%d",&n_int);
+    break;
+  case 2:
+    
+    break;
+  case 3:
+    
+    break;
+  case 4:
+    
+    break;
+  case 5:
+    
+    break;
+  }
+  
+  switch (op){
+  case 1:
+    
+    break;
+  case 2:
+    
+    break;
+  case 3:
+    
+    break;
+  case 4:
+    
+    break;
+  case 5:
+    
+    break;
+  default:
+    printf("\n>>> ERRO: Operação inválida.\n");
+    freeStruct_tab(tab);
+    return 0;
+  }
+  
+
+  
   freeStruct_tab(tab);
+  return 1;
 }
 
+// FUNÇÃO opera apenas em inteiros por enquanto.
