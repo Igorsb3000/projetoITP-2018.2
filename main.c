@@ -1,4 +1,4 @@
-/* 
+  /* 
 Problemas:
 - definir tamanho máximo dos campos com uma constante
 - fazer a cópia de arquivo no edita_linha mais eficiente
@@ -133,16 +133,16 @@ int main(void) {
        if(strcmp(str_aux, input)==0){
          existe=1;
          break;
-        }
-      }
-      fclose(relacao_file);
-      
-      if(existe)
-        pesquisarDados_tab(input, colInput);
-      else
-         printf("Tabela não existe!\n");
-      
-      break;
+       }
+     }
+     fclose(relacao_file);
+     
+     if(existe)
+      pesquisarDados_tab(input, colInput);
+    else
+     printf("Tabela não existe!\n");
+   
+   break;
     case 's':
       printf("Tchau!\n");
       continua=0;

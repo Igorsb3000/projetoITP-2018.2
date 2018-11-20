@@ -690,13 +690,14 @@ void listarDados_tab(char nome_tab[50], int n){
 int pesquisarDados_tab(char nome_tab[50], int n){
   
   FILE *tab_file;
-  char str_temp[50], aux[50];
+  char str_temp[50], aux[50], str_find[50];
   int campoOK; //bool
-  int i,j, op, tipo_campo, col, line;
+  int i,j, op, col, line, maior;
   int usr_int,tab_int;
   float usr_float,tab_float;
   double usr_double,tab_double;
   char usr_char,tab_char;
+  enum tipos_tab tipo_campo; 
   
   tabela *tab;
  
@@ -712,7 +713,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(strlen(str_temp)>maior)
       maior=strlen(str_temp);
-    fgetc(tab_file); // pule delimitador ; 
+      fgetc(tab_file); // pule delimitador ; 
   }
 
   rewind(tab_file);
@@ -723,8 +724,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
     if(line==1)
       printf("%-*s ",maior+2,str_temp);
-    fgetc(tab_file); // pule delimitador ; 
-    col++;
+      fgetc(tab_file); // pule delimitador ; 
+      col++;
 
     if(col==tab->C){
       printf("\n");
@@ -771,16 +772,19 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   printf("\n 4 - Valores menor que o valor informado");
   printf("\n 5 - Valores menor ou igual que o valor informado");
 
-  printf("\n\n Selecione a operação desejada e informe um valor para comparação: ");
-  scanf("%d %s", &op, str_temp);
+  printf("\n\nSelecione a operação desejada e informe um valor para comparação: \n");
+  scanf("%d %s", &op, str_find); //str_temp
 
+  //Confere se o numero passado pelo usuário cxorresponde ao tipo da coluna:
   switch(tipo_campo){ /// CORREÇÃO: passar valor tipo_campo para enum
   case 1:
-    
-    sscanf(str_temp,"%d",&n_int);
+    sscanf(str_find,"%d",&usr_int);
+    j=checaLimite_campos(str_find, tipo_campo);
     break;
   case 2:
-    
+  	sscanf(str_find,"%f",&usr_float);
+    i=checaLimite_campos(str_find, tipo_campo);
+    break;
     break;
   case 3:
     
@@ -792,12 +796,64 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     
     break;
   }
-  
+
+  tab_file=fopen(nome_tab,"r");
+  if(tab_file==NULL)
+    printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
+
   switch (op){
-  case 1:
+  	case 1:
+  		if(j && tipo_campo==int_){
+  			printf("Numero maiores que %d na coluna %s:\n", usr_int, aux);
+  			line=0; col=0;
+  			while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+  				if(line==1 && strcmp(str_temp, aux)==0){ //aux é onde está o campo selecionado pelo usuário
+  					i=col; 
+  				}
+
+			    if(line>1 && col==i){ //listas todos os numeros MAIORES que o passado pelo usuário
+			      	sscanf(str_temp,"%d",&tab_int);
+			      	if(usr_int<tab_int){
+			      		printf("%d\n", tab_int);
+			      	}
+			    }
+			    fgetc(tab_file); // pule delimitador ;
+			    
+			    if(col==tab->C-1){
+			      line++;
+			      col=-1;
+			    }
+			    col++;
+  			}
+  		}
+  		//>>>>>>>>>>>>>PAREI AQUI<<<<<<<<<<<<<<<<<<<
+  	  if(i && tipo_campo==float_){
+  			printf("Numero maiores que %f na coluna %s:\n", usr_float, aux);
+  			line=0; col=0;
+  			while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+  				if(line==1 && strcmp(str_temp, aux)==0){ //aux é onde está o campo selecionado pelo usuário
+  					i=col; 
+  				}
+
+			    if(line>1 && col==i){ //listas todos os numeros MAIORES que o passado pelo usuário
+			      	sscanf(str_temp,"%f",&tab_float);
+			      	if(usr_float<tab_float){
+			      		printf("%f\n", tab_float);	
+			      	}
+			    }
+			    fgetc(tab_file); // pule delimitador ;
+			    
+			    if(col==tab->C-1){
+			      line++;
+			      col=-1;
+			    }
+			    col++;
+  			}
+  		}
     
     break;
   case 2:
+
     
     break;
   case 3:
