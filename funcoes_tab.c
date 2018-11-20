@@ -31,7 +31,7 @@ void fillStruct_tab(tabela *tab, char nome_tab[50], int col){
 
   tab_file = fopen(nome_tab, "r");    
   if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
+    printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
 
   // Leia a linha de tipos
   for(i=0; i<tab->C; i++){
@@ -136,7 +136,7 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
 
   if(!campoOK){
     conversao_tipos(tipo_campo,tipo_temp);
-    printf(">>> ERRO: Campo passado precisa ser do tipo %s.\n",tipo_temp);
+    printf("\n>>> ERRO: Campo passado precisa ser do tipo %s.\n\n",tipo_temp);
   }
   
   return campoOK;
@@ -241,7 +241,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
     } else if(!campoOK){ 
       printf("\n>>> ERRO: Campo já foi criado.\n\n"); 
     } else if(!id_int){ 
-      printf("\n>>>> ERRO: Insira um campo obrigatoriamente do tipo int para ser o ID.\n\n");
+      printf("\n>>> ERRO: Insira um campo obrigatoriamente do tipo int para ser o ID.\n\n");
     } else{      
       strcpy(tabela_user->tab_L[j],nome_campo);
       tabela_user->tipos[j]=tipo_campo;
@@ -304,7 +304,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   fprintf(tabela_file,"\n");	
 
   if(tabela_file == NULL){
-    printf("Tabela não abriu!\n");
+    printf("\nALERTA: Tabela na linha %d não abriu!\n\n",__LINE__);
   }
   else{
     fclose(tabela_file);
@@ -315,7 +315,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   fprintf(relacao_file,"%s %d\n",tabela_user->nome, tabela_user->C);	
  
   if(tabela_file == NULL){
-    printf("Relação de tabelas não abriu!\n");
+    printf("\nALERTA: Relação de tabelas na linha %d não abriu!\n",__LINE__);
   }
   else{
     fclose(relacao_file);
@@ -356,7 +356,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     for(j=0; j<strlen(str_temp); j++){
 		if(isdigit(str_temp[j]) == 0){ 
 	  	campoOK=0;
-	  	printf(">>> ERRO: campo ID precisa ser do tipo unsigned int.\n");
+	  	printf("\n>>> ERRO: campo ID precisa ser do tipo unsigned int.\n\n");
 	  	break;
 	}		    	
       }
@@ -365,18 +365,18 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
       sscanf(str_temp,"%lf",&x_temp);
       if(0>x_temp || x_temp>UINT_MAX){
 	campoOK=0;
-	printf(">>> ERRO: campo passado não cabe em um unsigned int.\n");
+	printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
       } else{
 	// checagem se id é único
 	tab_file = fopen(nome_tab, "r");
 	if(tab_file == NULL)
-	  printf("Tabela não abriu!\n");
+	  printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
 	  
 	j=0; // pule linha de tipos e campos do arquivo
 	while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
 	  fscanf(tab_file, " %*[^\n]s");
 	  if(j>1 && strcmp(str_temp,id_file)==0){ 
-	    printf(">>> ERRO: ID %s já existe!\n",str_temp);
+	    printf("\n>>> ERRO: ID %s já existe!\n\n",str_temp);
 	    campoOK=0;
 	    break;
 	  }
@@ -392,7 +392,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
 	if(strcmp(str_temp, "NULL")==0){
 	  campoOK=0;
-	  printf(">>>ERRO: string reservada pelo sistema.\n");
+	  printf("\n>>>ERRO: string reservada pelo sistema.\n\n");
 	}
       }
     }
@@ -402,7 +402,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     
       tab_file = fopen(nome_tab, "a");
       if(tab_file == NULL)
-	printf("Tabela não abriu!\n");
+	printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
       
       fprintf(tab_file, "%s;", str_temp);
       fclose(tab_file);
@@ -412,7 +412,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
   tab_file = fopen(nome_tab, "a");
   if(tab_file == NULL)
-    printf("Tabela não abriu!\n");
+    printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
   
   fprintf(tab_file,"\n");
   fclose(tab_file);
@@ -457,7 +457,7 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
     if(existe_id)
       printf("Achei o ID %s.\n", chave);
     else
-      printf(">>> ERRO: ID não existe.\n");
+      printf("\n>>> ERRO: ID não existe.\n\n");
 
     rewind(tab_file);
   } while(!existe_id);
@@ -534,9 +534,9 @@ void insereColuna_tab(char nome_tab[50], int n){
     
     //verificar se o tipo é válido
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
-      printf(">>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n");
+      printf("\n>>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n\n");
     } else if(!campoOK){ 
-      printf(">>> ERRO: Campo já foi criado.\n"); // mensagem de erro caso campo inserido já exista
+      printf("\n>>> ERRO: Campo já foi criado.\n\n"); // mensagem de erro caso campo inserido já exista
     }else{      
       strcpy(tab->tab_L[tab->C],nome_campo);
       tab->tipos[tab->C]=tipo_campo;
@@ -550,7 +550,7 @@ void insereColuna_tab(char nome_tab[50], int n){
   file_temp=fopen("fileTemp","w+");
   
   if(file_temp==NULL){
-    printf("Arquivo na linha %d não abriu!",__LINE__);
+    printf("\nALERTA: Arquivo na linha %d não abriu!",__LINE__);
   }
 
 
@@ -602,7 +602,7 @@ void insereColuna_tab(char nome_tab[50], int n){
   relacao_file = fopen("relacaoTab", "r");
     
   if(relacao_file == NULL){
-    printf("Relação de tabelas não abriu!\n");
+    printf("\nALERTA: Relação de tabelas na linha %d não abriu!\n",__LINE__);
   }
   		
 

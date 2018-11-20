@@ -6,7 +6,6 @@ Problemas:
 Melhorias:
 - coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
 - Minimizar a abertura de arquivos
-- Mensagens de error de abertura de tabela mostram qual a linha e param o código
  */
 
 #include "lista_func.h"
@@ -32,7 +31,7 @@ int main(void) {
     printf("5 - Inserir coluna em uma tabela\n");
     printf("6 - Listar dados de uma tabela\n");
     printf("7 - Pesquisar valor em uma tabela\n");
-    printf("s - sair\n\n");
+    printf("s - Sair\n\n");
 
     scanf(" %c",&op);
 
