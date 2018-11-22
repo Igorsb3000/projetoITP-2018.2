@@ -1012,10 +1012,169 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     return 0;
   }
   
-
-  
   freeStruct_tab(tab);
   return 1;
 }
 
-// FUNÇÃO opera apenas em inteiros por enquanto.
+void apagarLinha(char nome_tab[50], int n){
+   FILE *tab_file,*file_temp;
+  char str_temp[50], id_file[50];
+  int i,cont, line;
+  int campoOK,existe_id; //bool
+  char chave[10],chave_user[10], aux[50], c_temp;
+  long int pos;
+
+  tabela *tab; //tipo struct tabela_t
+
+  tab=alocaStruct_tab(n);  
+  fillStruct_tab(tab, nome_tab, n);
+
+  // Pede a chave primária(ID), caso não exista repete o processo
+  tab_file = fopen(nome_tab, "r");
+  
+  do{ 
+    printf("Insira o ID da linha: ");
+    scanf(" %s", chave_user);
+
+    //procura o ID da linha que será apagada
+    line=1;
+    cont=0;
+    existe_id=0;
+    while(fscanf(tab_file," %[^;]s", chave)!=EOF){
+    	
+      if(cont>=2 && strcmp(chave, chave_user)==0){
+		existe_id=1;
+		printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
+		break;
+      }
+
+		fscanf(tab_file, " %*[^\n]s");
+		cont++;	
+    }
+
+    if(existe_id)
+      printf("Achei o ID %s.\n", chave);
+    else{
+      printf("\n>>> ERRO: ID não existe.\n\n");
+    
+    }
+    
+  } while(!existe_id);
+
+  //volta para o inicio da arquivo
+  rewind(tab_file);
+
+  //cria um arquivo temporário
+  file_temp=fopen("fileTemp", "w+");
+  if(file_temp==NULL)
+  	printf("\nAlerta: Arquivo na linha %d não abriu!\n\n", __LINE__);
+ 
+  int col, linha, j;
+  char ch;
+  linha=1;
+  col=-1;   
+ //copia o arquivo da tabela até chegar a linha cont+1, quando para de copiar
+  while(fscanf(tab_file," %[^;]s", aux)!=EOF){
+  		col++;
+  	if(linha==cont+1 && col<tab->C){
+  		j=0;
+  		while(j<tab->C || fscanf(tab_file," %[^;]s", aux)!=EOF){ 
+ 
+  			fgetc(tab_file);
+  			j++;
+  			col++;
+  		}
+  		
+  	} 
+  	else if(linha!=cont+1){
+  		fprintf(file_temp, "%s;", aux);	
+  	}
+  	fgetc(tab_file);
+
+  	if(col==tab->C-1){
+  		linha++;
+  		fprintf(file_temp,"\n");
+  		col=-1;
+  	}
+  }
+  //fecha o arquivo temporário, até então foram copiadas todas as linhas acima da que se quer apagar
+  fclose(file_temp);
+
+  //abre o temporário para preecher o restante das linhas logo abaixo a ultima linha da que será apagada
+  file_temp = fopen("fileTemp", "a");
+  rewind(tab_file);
+
+  //se o a linha for maior que a escolhida para ser apagada, copio para o temporário
+  col=-1;
+  linha=1;
+  while(fscanf(tab_file," %[^;]s", aux)!=EOF){ //cont+2 as linhas que quero imprimir no arquivo
+  	col++;
+
+  	if(linha>=cont+2){
+  		fprintf(file_temp, "%s;", aux);
+  	}
+  	fgetc(tab_file);
+
+  	if(col==tab->C-1){
+  		linha++;
+  		col=-1;
+  		if(linha>cont+2)
+  			fprintf(file_temp,"\n");
+  		
+  	}
+  }
+
+	  fclose(tab_file);
+	  remove("nome_tab");
+	  rename("fileTemp", tab->nome);
+	  fclose(file_temp);
+
+	  //liberando memória
+	  freeStruct_tab(tab);
+	}
+
+
+void apagarTab(char nome_tab[50], int n){
+		FILE *relacao_file, *file_temp, *tab_file;
+		char aux[50];
+		int num;
+		
+		tabela *tab; //tipo struct tabela_t
+
+		tab=alocaStruct_tab(n);  
+		fillStruct_tab(tab, nome_tab, n);
+
+		//abri o arquivo relacaoTab para ler as tabelas existentes
+	  relacao_file = fopen("relacaoTab", "r");
+    
+	  if(relacao_file == NULL){
+	    printf("\nALERTA: Relação de tabelas na linha %d não abriu!\n",__LINE__);
+	  }
+	  		
+
+	  file_temp=fopen("fileTemp","w+");
+		
+	  //Copiando o arquivo relacaoTab para um temporário até chegar a tabela a ser excluida, quando chega a tabela que será excluida ele fecha o arquivo e copia o restante das tabelas na linha abaixo
+	  while(fscanf(relacao_file," %s %d", aux, &num)!=EOF){
+	    if(strcmp(aux, nome_tab)==0){
+	    	fclose(file_temp);
+
+	    }else{
+	      file_temp=fopen("fileTemp", "a");
+
+	      if(file_temp==NULL)
+		    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
+
+	      	fprintf(file_temp, "%s %d", aux, num);
+	      	fprintf(file_temp, "\n");
+	    }
+
+	  }
+
+			rename("fileTemp", "relacaoTab");
+  			fclose(file_temp);
+			remove(tab->nome); 
+
+			//liberando memória
+			freeStruct_tab(tab);
+		}
