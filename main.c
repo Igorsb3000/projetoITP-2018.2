@@ -1,10 +1,11 @@
   /* 
 Problemas:
 - definir tamanho máximo dos campos com uma constante
-- fazer a cópia de arquivo no edita_linha mais eficiente
+- fazer a cópia de arquivo no edita_linha mais eficiente (perguntar se deseja editar cada campo, ao invés de fazer o usuário reescrever tudo)
+- proibir o usuário de utilizar o ; em algum campo 
 
 Melhorias:
-- coversão de tipos pode retornar um string constane de modo a não precisar declarar variáveis para utilizá-lo?
+- coversão de tipos pode retornar um string constante de modo a não precisar declarar variáveis para utilizá-lo?
 - Minimizar a abertura de arquivos
  */
 
