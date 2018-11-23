@@ -780,7 +780,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   printf("\n 6 - Retornar ao menu anterior");
 
   printf("\n\nSelecione a operação desejada e informe um valor para comparação: \n");
-  scanf(" %d %s", &op, str_find); 
+  scanf(" %d %[^\n]s", &op, str_find); 
 
   //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
   } while(!checaLimite_campos(str_find, tipo_campo));
@@ -879,6 +879,24 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       }
     } else if(tipo_campo==string_){
       strcpy(usr_str,str_find);
+      printf("Palavras lexicograficamente maiores que %s na coluna %s:\n", usr_str, usr_campo);
+
+      line=0; col=0;
+      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	if(line>1 && col==usr_col){ 
+	  if(strcmp(usr_str,str_temp)>0){
+	    printf("%s\n", str_temp);	
+	  }
+	}
+	fgetc(tab_file); // pule delimitador ;
+			    
+	if(col==tab->C-1){
+	  line++;
+	  col=-1;
+	}
+	col++;
+      }
 
     }
     
@@ -970,7 +988,24 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       }
     } else if(tipo_campo==string_){
       strcpy(usr_str,str_find);
+      printf("Palavras lexicograficamente maiores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
 
+      line=0; col=0;
+      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	if(line>1 && col==usr_col){ 
+	  if(strcmp(usr_str,str_temp)>=0){
+	    printf("%s\n", str_temp);	
+	  }
+	}
+	fgetc(tab_file); // pule delimitador ;
+			    
+	if(col==tab->C-1){
+	  line++;
+	  col=-1;
+	}
+	col++;
+      }
     }
 
     break;
@@ -1171,6 +1206,24 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
     } else if(tipo_campo==string_){
       strcpy(usr_str,str_find);
+      printf("Palavras lexicograficamente menores que %s na coluna %s:\n", usr_str, usr_campo);
+
+      line=0; col=0;
+      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	if(line>1 && col==usr_col){ 
+	  if(strcmp(usr_str,str_temp)<0){
+	    printf("%s\n", str_temp);	
+	  }
+	}
+	fgetc(tab_file); // pule delimitador ;
+			    
+	if(col==tab->C-1){
+	  line++;
+	  col=-1;
+	}
+	col++;
+      }
 
     }
 
@@ -1263,6 +1316,24 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
     } else if(tipo_campo==string_){
       strcpy(usr_str,str_find);
+      printf("Palavras lexicograficamente menores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
+
+      line=0; col=0;
+      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	if(line>1 && col==usr_col){ 
+	  if(strcmp(usr_str,str_temp)<=0){
+	    printf("%s\n", str_temp);	
+	  }
+	}
+	fgetc(tab_file); // pule delimitador ;
+			    
+	if(col==tab->C-1){
+	  line++;
+	  col=-1;
+	}
+	col++;
+      }
 
     }
     
@@ -1278,7 +1349,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   fclose(tab_file);
 }while(1); 
  
-}
+
 
 
 // FUNÇÃO opera apenas em inteiros, float, double e char por enquanto. Falta fazer para strings
@@ -1449,4 +1520,4 @@ void apagarTab(char nome_tab[50], int n){
 			//liberando memória
 			freeStruct_tab(tab);
 		}
->>>>>>> 726c39dc9fc759fe678b6e4d48db00653d19089b
+
