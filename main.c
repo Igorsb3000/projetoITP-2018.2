@@ -32,6 +32,8 @@ int main(void) {
     printf("5 - Inserir coluna em uma tabela\n");
     printf("6 - Listar dados de uma tabela\n");
     printf("7 - Pesquisar valor em uma tabela\n");
+    printf("8 - Apagar linha da tabela\n");
+    printf("9 - Apagar tabela\n");
     printf("s - Sair\n\n");
 
     scanf(" %c",&op);
@@ -144,6 +146,46 @@ int main(void) {
      printf("Tabela não existe!\n");
    
    break;
+   case '8':
+    printf("Qual a tabela que deseja acessar?\n");
+      scanf(" %s",input);
+      relacao_file = fopen("relacaoTab", "r");
+      
+      existe=0;
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
+       if(strcmp(str_aux, input)==0){
+         existe=1;
+         break;
+        }
+      }
+      fclose(relacao_file);
+
+      if(existe)
+        apagarLinha(input, colInput);
+      else
+        printf("Tabela não existe!\n");
+
+      break;
+    case '9':
+      printf("Qual a tabela que deseja apagar?\n");
+        scanf(" %s",input);
+        relacao_file = fopen("relacaoTab", "r");
+        
+        existe=0;
+        while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
+         if(strcmp(str_aux, input)==0){
+           existe=1;
+           break;
+          }
+        }
+        fclose(relacao_file);
+
+        if(existe)
+          apagarTab(input, colInput);
+        else
+          printf("Tabela não existe!\n");
+
+      break;
     case 's':
       printf("Tchau!\n");
       continua=0;

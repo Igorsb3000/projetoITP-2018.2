@@ -37,5 +37,9 @@ void listarDados_tab(char nome_tab[50], int n);
 
 int pesquisarDados_tab(char nome_tab[50], int n);
 
+void apagarLinha(char nome_tab[50], int n);
+
+void apagarTab(char nome_tab[50], int n);
+
 
 
