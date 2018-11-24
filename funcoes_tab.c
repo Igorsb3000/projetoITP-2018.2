@@ -687,14 +687,14 @@ void listarDados_tab(char nome_tab[50], int n){
 int pesquisarDados_tab(char nome_tab[50], int n){
   
   FILE *tab_file;
-  char str_temp[50], str_tipo[10], aux[50], str_find[50];
-  int campoOK, aux_num; //bool
-  int i,j, op, col, usr_col, line, maior;
+  char str_temp[50], str_tipo[10], str_find[50], *str;
+  int campoOK; //bool
+  int i, op, col, usr_col, line, maior;
   int usr_int,tab_int;
   float usr_float,tab_float;
   double usr_double,tab_double;
   char usr_char,tab_char;
-  char usr_str[50], usr_campo[50], tab_str[50];
+  char usr_str[50], usr_campo[50];
   enum tipos_tab tipo_campo; 
   
   tabela *tab;
@@ -725,13 +725,12 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       col++;
 
     if(col==tab->C){
-      printf("\n");
       line++;
       col=0;
     }
 
   }
-  printf("Digite a coluna para realizar a pesquisa: \n");
+  printf("\n\nDigite a coluna para realizar a pesquisa: \n");
   scanf(" %[^\n]s", usr_campo);
   
   rewind(tab_file);
@@ -765,586 +764,684 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     return 0;
   }
 
-  do{ //tmp: loop para continuar perguntando o menu até pressionar s
-  do{
+  do{ 
+    do{
 
-  printf("\n *** MENU ***\n");
-  printf("\n 1 - Valores maior que o valor informado");
-  printf("\n 2 - Valores maior ou igual que o valor informado");
-  printf("\n 3 - Valores igual ao valor informado");
-  printf("\n 4 - Valores menor que o valor informado");
-  printf("\n 5 - Valores menor ou igual que o valor informado");
-  printf("\n 6 - Retornar ao menu anterior");
+      printf("\n *** MENU ***\n");
+      printf("\n 1 - Valores maior que o valor informado");
+      printf("\n 2 - Valores maior ou igual que o valor informado");
+      printf("\n 3 - Valores igual ao valor informado");
+      printf("\n 4 - Valores menor que o valor informado");
+      printf("\n 5 - Valores menor ou igual que o valor informado");
+      printf("\n 6 - Busca parcial de palavras (use * )");
+      printf("\n 7 - Retornar ao menu anterior");
 
-  printf("\n\nSelecione a operação desejada e informe um valor para comparação: \n");
-  scanf(" %d %[^\n]s", &op, str_find); 
+      printf("\n\nSelecione a operação desejada: \n");
+      scanf(" %d", &op);
+      if(op!=7){ 
+	printf("\nInforme um valor para comparação: \n");
+	scanf(" %[^\n]s", str_find); 
+      }
 
-  //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
-  } while(!checaLimite_campos(str_find, tipo_campo));
+      //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
+    } while(!checaLimite_campos(str_find, tipo_campo));
 
 
-  tab_file=fopen(nome_tab,"r");
-  if(tab_file==NULL)
-    printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
+    tab_file=fopen(nome_tab,"r");
+    if(tab_file==NULL)
+      printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
 
-  switch (op){
-  case 1: //lista todos os números MAIORES que o passado pelo usuário
+    switch (op){
+    case 1: //lista todos os números MAIORES que o passado pelo usuário
 
-    if(tipo_campo==int_){
-      sscanf(str_find,"%d",&usr_int);
-      printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
+      if(tipo_campo==int_){
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%d",&tab_int);
-	  if(usr_int<tab_int){
-	    printf("%d\n", tab_int);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%d",&tab_int);
+	    if(usr_int<tab_int){
+	      printf("%d\n", tab_int);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==float_){
-      sscanf(str_find,"%f",&usr_float);
-      printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%f",&tab_float);
-	  if(usr_float<tab_float){
-	    printf("%f\n", tab_float);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==double_){
-      sscanf(str_find,"%lf",&usr_double);
-      printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
+      } else if(tipo_campo==float_){
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%lf",&tab_double);
-	  if(usr_double<tab_double){
-	    printf("%lf\n", tab_double);	
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%f",&tab_float);
+	    if(usr_float<tab_float){
+	      printf("%f\n", tab_float);	
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
-      }
-    } else if(tipo_campo==char_){
-      sscanf(str_find,"%c",&usr_char);
-      printf("Caracteres lexicograficamente maiores que %c na coluna %s:\n", usr_char, usr_campo);
+      } else if(tipo_campo==double_){
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%lf",&tab_double);
+	    if(usr_double<tab_double){
+	      printf("%lf\n", tab_double);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+      } else if(tipo_campo==char_){
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente maiores que %c na coluna %s:\n", usr_char, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%c",&tab_char);
-	  if(usr_char<tab_char){
-	    printf("%c\n", tab_char);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%c",&tab_char);
+	    if(usr_char<tab_char){
+	      printf("%c\n", tab_char);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==string_){
-      strcpy(usr_str,str_find);
-      printf("Palavras lexicograficamente maiores que %s na coluna %s:\n", usr_str, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  if(strcmp(usr_str,str_temp)>0){
-	    printf("%s\n", str_temp);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
+      } else if(tipo_campo==string_){
+	strcpy(usr_str,str_find);
+	printf("Palavras lexicograficamente maiores que %s na coluna %s:\n", usr_str, usr_campo);
 
-    }
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    if(strcmp(usr_str,str_temp)>0){
+	      printf("%s\n", str_temp);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+
+      }
     
-    break;
-  case 2: //lista todos os números MAIORES OU IGUAIS ao número passado pelo usuário
-    if(tipo_campo==int_){
-      sscanf(str_find,"%d",&usr_int);
-      printf("Números maiores ou iguais a %d na coluna %s:\n", usr_int, usr_campo);
+      break;
+    case 2: //lista todos os números MAIORES OU IGUAIS ao número passado pelo usuário
+      if(tipo_campo==int_){
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números maiores ou iguais a %d na coluna %s:\n", usr_int, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%d",&tab_int);
-	  if(usr_int<=tab_int){
-	    printf("%d\n", tab_int);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%d",&tab_int);
+	    if(usr_int<=tab_int){
+	      printf("%d\n", tab_int);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 				    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==float_){
-      sscanf(str_find,"%f",&usr_float);
-      printf("Números maiores ou iguais a %f na coluna %s:\n", usr_float, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%f",&tab_float);
-	  if(usr_float<=tab_float){
-	    printf("%f\n", tab_float);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==double_){
-      sscanf(str_find,"%lf",&usr_double);
-      printf("Números maiores ou iguais a %lf na coluna %s:\n", usr_double, usr_campo);
+      } else if(tipo_campo==float_){
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números maiores ou iguais a %f na coluna %s:\n", usr_float, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%lf",&tab_double);
-	  if(usr_double<=tab_double){
-	    printf("%lf\n", tab_double);	
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%f",&tab_float);
+	    if(usr_float<=tab_float){
+	      printf("%f\n", tab_float);	
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
-      }
-    } else if(tipo_campo==char_){
-      sscanf(str_find,"%c",&usr_char);
-      printf("Caracteres lexicograficamente maiores ou iguais a %c na coluna %s:\n", usr_char, usr_campo);
+      } else if(tipo_campo==double_){
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números maiores ou iguais a %lf na coluna %s:\n", usr_double, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%lf",&tab_double);
+	    if(usr_double<=tab_double){
+	      printf("%lf\n", tab_double);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+      } else if(tipo_campo==char_){
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente maiores ou iguais a %c na coluna %s:\n", usr_char, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%c",&tab_char);
-	  if(usr_char<=tab_char){
-	    printf("%c\n", tab_char);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%c",&tab_char);
+	    if(usr_char<=tab_char){
+	      printf("%c\n", tab_char);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==string_){
-      strcpy(usr_str,str_find);
-      printf("Palavras lexicograficamente maiores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  if(strcmp(usr_str,str_temp)>=0){
-	    printf("%s\n", str_temp);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
+      } else if(tipo_campo==string_){
+	strcpy(usr_str,str_find);
+	printf("Palavras lexicograficamente maiores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    if(strcmp(usr_str,str_temp)>=0){
+	      printf("%s\n", str_temp);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    }
-
-    break;
-  case 3: //lista todos os números IGUAIS ao passado pelo usuário
-    if(tipo_campo==int_){
-      sscanf(str_find,"%d",&usr_int);
-      printf("Números iguais a %d na coluna %s:\n", usr_int, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%d",&tab_int);
-	  if(usr_int==tab_int){
-	    printf("%d\n", tab_int);
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
+      }
+
+      break;
+    case 3: //lista todos os números IGUAIS ao passado pelo usuário
+      if(tipo_campo==int_){
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números iguais a %d na coluna %s:\n", usr_int, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%d",&tab_int);
+	    if(usr_int==tab_int){
+	      printf("%d\n", tab_int);
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
 				    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==float_){
-      sscanf(str_find,"%f",&usr_float);
-      printf("Números iguais a %f na coluna %s:\n", usr_float, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%f",&tab_float);
-	  if(usr_float==tab_float){
-	    printf("%f\n", tab_float);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==double_){
-      sscanf(str_find,"%lf",&usr_double);
-      printf("Números iguais a %lf na coluna %s:\n", usr_double, usr_campo);
+      } else if(tipo_campo==float_){
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números iguais a %f na coluna %s:\n", usr_float, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%lf",&tab_double);
-	  if(usr_double==tab_double){
-	    printf("%lf\n", tab_double);	
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%f",&tab_float);
+	    if(usr_float==tab_float){
+	      printf("%f\n", tab_float);	
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
-      }
-    } else if(tipo_campo==char_){
-      sscanf(str_find,"%c",&usr_char);
-      printf("Caracteres lexicograficamente iguais a %c na coluna %s:\n", usr_char, usr_campo);
+      } else if(tipo_campo==double_){
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números iguais a %lf na coluna %s:\n", usr_double, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%lf",&tab_double);
+	    if(usr_double==tab_double){
+	      printf("%lf\n", tab_double);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+      } else if(tipo_campo==char_){
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente iguais a %c na coluna %s:\n", usr_char, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%c",&tab_char);
-	  if(usr_char==tab_char){
-	    printf("%c\n", tab_char);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%c",&tab_char);
+	    if(usr_char==tab_char){
+	      printf("%c\n", tab_char);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
+
+      } else if(tipo_campo==string_){
+	strcpy(usr_str,str_find);
+	printf("Palavras iguais a %s na coluna %s:\n", usr_str, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    if(strcmp(usr_str,str_temp)==0){
+	      printf("%s\n", str_temp);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
       }
 
-    } else if(tipo_campo==string_){
-      strcpy(usr_str,str_find);
-      printf("Palavras iguais a %s na coluna %s:\n", usr_str, usr_campo);
+      break;
+    case 4:
+      if(tipo_campo==int_){
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números menores que %d na coluna %s:\n", usr_int, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  if(strcmp(usr_str,str_temp)==0){
-	    printf("%s\n", str_temp);	
+	  if(line>1 && col==usr_col){ //listas todos os números MAIORES que o passado pelo usuário
+	    sscanf(str_temp,"%d",&tab_int);
+	    if(usr_int>tab_int){
+	      printf("%d\n", tab_int);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    }
-
-    break;
-  case 4:
-    if(tipo_campo==int_){
-      sscanf(str_find,"%d",&usr_int);
-      printf("Números menores que %d na coluna %s:\n", usr_int, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ //listas todos os números MAIORES que o passado pelo usuário
-	  sscanf(str_temp,"%d",&tab_int);
-	  if(usr_int>tab_int){
-	    printf("%d\n", tab_int);
-	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 				    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==float_){
-      sscanf(str_find,"%f",&usr_float);
-      printf("Números menores que %f na coluna %s:\n", usr_float, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%f",&tab_float);
-	  if(usr_float>tab_float){
-	    printf("%f\n", tab_float);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==double_){
-      sscanf(str_find,"%lf",&usr_double);
-      printf("Números menores que %lf na coluna %s:\n", usr_double, usr_campo);
+      } else if(tipo_campo==float_){
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números menores que %f na coluna %s:\n", usr_float, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%lf",&tab_double);
-	  if(usr_double>tab_double){
-	    printf("%lf\n", tab_double);	
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%f",&tab_float);
+	    if(usr_float>tab_float){
+	      printf("%f\n", tab_float);	
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
-      }
-    } else if(tipo_campo==char_){
-      sscanf(str_find,"%c",&usr_char);
-      printf("Caracteres lexicograficamente menores que %c na coluna %s:\n", usr_char, usr_campo);
+      } else if(tipo_campo==double_){
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números menores que %lf na coluna %s:\n", usr_double, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%lf",&tab_double);
+	    if(usr_double>tab_double){
+	      printf("%lf\n", tab_double);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+      } else if(tipo_campo==char_){
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente menores que %c na coluna %s:\n", usr_char, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%c",&tab_char);
-	  if(usr_char>tab_char){
-	    printf("%c\n", tab_char);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%c",&tab_char);
+	    if(usr_char>tab_char){
+	      printf("%c\n", tab_char);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
+
+      } else if(tipo_campo==string_){
+	strcpy(usr_str,str_find);
+	printf("Palavras lexicograficamente menores que %s na coluna %s:\n", usr_str, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    if(strcmp(usr_str,str_temp)<0){
+	      printf("%s\n", str_temp);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+
       }
 
-    } else if(tipo_campo==string_){
-      strcpy(usr_str,str_find);
-      printf("Palavras lexicograficamente menores que %s na coluna %s:\n", usr_str, usr_campo);
+      break;
+    case 5:
+      if(tipo_campo==int_){
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números menores ou iguais a %d na coluna %s:\n", usr_int, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  if(strcmp(usr_str,str_temp)<0){
-	    printf("%s\n", str_temp);	
-	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-
-    }
-
-    break;
-  case 5:
-    if(tipo_campo==int_){
-      sscanf(str_find,"%d",&usr_int);
-      printf("Números menores ou iguais a %d na coluna %s:\n", usr_int, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ //listas todos os numeros MAIORES que o passado pelo usuário
-	  sscanf(str_temp,"%d",&tab_int);
-	  if(usr_int>=tab_int){
-	    printf("%d\n", tab_int);
+	  if(line>1 && col==usr_col){ //listas todos os numeros MAIORES que o passado pelo usuário
+	    sscanf(str_temp,"%d",&tab_int);
+	    if(usr_int>=tab_int){
+	      printf("%d\n", tab_int);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 				    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==float_){
-      sscanf(str_find,"%f",&usr_float);
-      printf("Números menores ou iguais a %f na coluna %s:\n", usr_float, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%f",&tab_float);
-	  if(usr_float>=tab_float){
-	    printf("%f\n", tab_float);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-    } else if(tipo_campo==double_){
-      sscanf(str_find,"%lf",&usr_double);
-      printf("Números menores ou iguais a %lf na coluna %s:\n", usr_double, usr_campo);
+      } else if(tipo_campo==float_){
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números menores ou iguais a %f na coluna %s:\n", usr_float, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%lf",&tab_double);
-	  if(usr_double>=tab_double){
-	    printf("%lf\n", tab_double);	
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%f",&tab_float);
+	    if(usr_float>=tab_float){
+	      printf("%f\n", tab_float);	
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
 	}
-	col++;
-      }
-    } else if(tipo_campo==char_){
-      sscanf(str_find,"%c",&usr_char);
-      printf("Caracteres lexicograficamente maiores ou iguais a %c na coluna %s:\n", usr_char, usr_campo);
+      } else if(tipo_campo==double_){
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números menores ou iguais a %lf na coluna %s:\n", usr_double, usr_campo);
 
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%lf",&tab_double);
+	    if(usr_double>=tab_double){
+	      printf("%lf\n", tab_double);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+      } else if(tipo_campo==char_){
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente maiores ou iguais a %c na coluna %s:\n", usr_char, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 	
-	if(line>1 && col==usr_col){ 
-	  sscanf(str_temp,"%c",&tab_char);
-	  if(usr_char>=tab_char){
-	    printf("%c\n", tab_char);
+	  if(line>1 && col==usr_col){ 
+	    sscanf(str_temp,"%c",&tab_char);
+	    if(usr_char>=tab_char){
+	      printf("%c\n", tab_char);
+	    }
 	  }
-	}
-	fgetc(tab_file); // pule delimitador ;
+	  fgetc(tab_file); // pule delimitador ;
 			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
-
-    } else if(tipo_campo==string_){
-      strcpy(usr_str,str_find);
-      printf("Palavras lexicograficamente menores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
-
-      line=0; col=0;
-      while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
-	if(line>1 && col==usr_col){ 
-	  if(strcmp(usr_str,str_temp)<=0){
-	    printf("%s\n", str_temp);	
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
 	  }
+	  col++;
 	}
-	fgetc(tab_file); // pule delimitador ;
-			    
-	if(col==tab->C-1){
-	  line++;
-	  col=-1;
-	}
-	col++;
-      }
 
-    }
+      } else if(tipo_campo==string_){
+	strcpy(usr_str,str_find);
+	printf("Palavras lexicograficamente menores ou iguais a %s na coluna %s:\n", usr_str, usr_campo);
+
+	line=0; col=0;
+	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	  if(line>1 && col==usr_col){ 
+	    if(strcmp(usr_str,str_temp)<=0){
+	      printf("%s\n", str_temp);	
+	    }
+	  }
+	  fgetc(tab_file); // pule delimitador ;
+			    
+	  if(col==tab->C-1){
+	    line++;
+	    col=-1;
+	  }
+	  col++;
+	}
+
+      }
     
-    break;
-  case 6:
-    freeStruct_tab(tab);
-    return 1;
-    break;
-  default:
-    printf("\n>>> ERRO: Operação inválida.\n");
-  }
+      break;
+    case 6:
+      if(tipo_campo==string_){
 
-  fclose(tab_file);
-}while(1); 
+	if(str_find[0]=='*' && str_find[strlen(str_find)-1]=='*'){
+
+	  for(i=1;i<(strlen(str_find)-1);i++){
+	    usr_str[i-1]=str_find[i];
+	  }
+	  usr_str[strlen(str_find)-2]='\0';
+
+	  printf("\nCampos que contém %s na coluna %s:\n", usr_str, usr_campo);
+
+	  line=0; col=0;
+	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	    if(line>1 && col==usr_col){ 
+	      if(strcasestr(str_temp,usr_str)!=NULL){
+		printf("%s\n", str_temp);	
+	      }
+	    }
+	    fgetc(tab_file); // pule delimitador ;
+			    
+	    if(col==tab->C-1){
+	      line++;
+	      col=-1;
+	    }
+	    col++;
+	  }
+
+	} else if(str_find[0]=='*'){
+	   
+	  for(i=1;i<strlen(str_find);i++){
+	    usr_str[i-1]=str_find[i];
+	  }
+	  usr_str[strlen(str_find)-1]='\0';
+
+	  printf("Campos que terminam com %s na coluna %s:\n", usr_str, usr_campo);
+
+	  line=0; col=0;
+	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	    if(line>1 && col==usr_col){ 
+	      str=strcasestr(str_temp,usr_str);
+
+	      if(str!=NULL){
+		if(strlen(str)==strlen(usr_str))
+		  printf("%s\n", str_temp);	
+	      }
+	    }
+	    fgetc(tab_file); // pule delimitador ;
+			    
+	    if(col==tab->C-1){
+	      line++;
+	      col=-1;
+	    }
+	    col++;
+	  }
+
+	} else if(str_find[strlen(str_find)-1]=='*'){
+
+	  for(i=0;i<strlen(str_find)-1;i++){
+	    usr_str[i]=str_find[i];
+	  }
+	  usr_str[strlen(str_find)-1]='\0';
+
+	  printf("Campos que iniciam com %s na coluna %s:\n", usr_str, usr_campo);
+
+	  line=0; col=0;
+	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+
+	    if(line>1 && col==usr_col){ 
+	      str=strcasestr(str_temp,usr_str);
+
+	      if(str!=NULL){
+		if(strlen(str)==strlen(str_temp))
+		  printf("%s\n", str_temp);	
+	      }
+	    }
+	    fgetc(tab_file); // pule delimitador ;
+			    
+	    if(col==tab->C-1){
+	      line++;
+	      col=-1;
+	    }
+	    col++;
+	  }
+
+	}
+	
+      } else {
+	printf("\n>>> ERRO: Operação só funciona com string.\n\n");
+      }
+      break;
+    case 7:
+      freeStruct_tab(tab);
+      return 1;
+      break;
+    default:
+      printf("\n>>> ERRO: Operação inválida.\n");
+    }
+
+    fclose(tab_file);
+  }while(1); 
  
 
 
@@ -1356,12 +1453,10 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 }
 
 void apagarLinha(char nome_tab[50], int n){
-   FILE *tab_file,*file_temp;
-  char str_temp[50], id_file[50];
-  int i,cont, line;
-  int campoOK,existe_id; //bool
-  char chave[10],chave_user[10], aux[50], c_temp;
-  long int pos;
+  FILE *tab_file,*file_temp;
+  int col, linha, cont;
+  int existe_id; //bool
+  char chave[10],chave_user[10], aux[50];
 
   tabela *tab; //tipo struct tabela_t
 
@@ -1376,27 +1471,24 @@ void apagarLinha(char nome_tab[50], int n){
     scanf(" %s", chave_user);
 
     //procura o ID da linha que será apagada
-    line=1;
     cont=0;
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", chave)!=EOF){
     	
       if(cont>=2 && strcmp(chave, chave_user)==0){
-		existe_id=1;
-		printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
-		break;
+	existe_id=1;
+	printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
+	break;
       }
 
-		fscanf(tab_file, " %*[^\n]s");
-		cont++;	
+      fscanf(tab_file, " %*[^\n]s");
+      cont++;	
     }
 
     if(existe_id)
       printf("Achei o ID %s.\n", chave);
-    else{
-      printf("\n>>> ERRO: ID não existe.\n\n");
-    
-    }
+    else
+      printf("\n>>> ERRO: ID não existe.\n\n"); // colocar um return aqui? ** Melhoria **
     
   } while(!existe_id);
 
@@ -1406,114 +1498,72 @@ void apagarLinha(char nome_tab[50], int n){
   //cria um arquivo temporário
   file_temp=fopen("fileTemp", "w+");
   if(file_temp==NULL)
-  	printf("\nAlerta: Arquivo na linha %d não abriu!\n\n", __LINE__);
+    printf("\nAlerta: Arquivo na linha %d não abriu!\n\n", __LINE__);
  
-  int col, linha, j;
-  char ch;
-  linha=1;
+  linha=0;
   col=-1;   
- //copia o arquivo da tabela até chegar a linha cont+1, quando para de copiar
+  //copia o arquivo da tabela excluindo a linha cont (linha do id)
   while(fscanf(tab_file," %[^;]s", aux)!=EOF){
-  		col++;
-  	if(linha==cont+1 && col<tab->C){
-  		j=0;
-  		while(j<tab->C || fscanf(tab_file," %[^;]s", aux)!=EOF){ 
- 
-  			fgetc(tab_file);
-  			j++;
-  			col++;
-  		}
-  		
-  	} 
-  	else if(linha!=cont+1){
-  		fprintf(file_temp, "%s;", aux);	
-  	}
-  	fgetc(tab_file);
+    col++;
 
-  	if(col==tab->C-1){
-  		linha++;
-  		fprintf(file_temp,"\n");
-  		col=-1;
-  	}
+    if(linha!=cont){
+      fprintf(file_temp, "%s;", aux);
+      if(col==tab->C-1){
+	fprintf(file_temp,"\n");
+      }	
+    }
+
+    fgetc(tab_file);
+
+    if(col==tab->C-1){
+      linha++;
+      col=-1;
+    }
   }
-  //fecha o arquivo temporário, até então foram copiadas todas as linhas acima da que se quer apagar
+
+  fclose(tab_file);
+  remove("nome_tab");
+  rename("fileTemp", tab->nome);
   fclose(file_temp);
 
-  //abre o temporário para preecher o restante das linhas logo abaixo a ultima linha da que será apagada
-  file_temp = fopen("fileTemp", "a");
-  rewind(tab_file);
-
-  //se o a linha for maior que a escolhida para ser apagada, copio para o temporário
-  col=-1;
-  linha=1;
-  while(fscanf(tab_file," %[^;]s", aux)!=EOF){ //cont+2 as linhas que quero imprimir no arquivo
-  	col++;
-
-  	if(linha>=cont+2){
-  		fprintf(file_temp, "%s;", aux);
-  	}
-  	fgetc(tab_file);
-
-  	if(col==tab->C-1){
-  		linha++;
-  		col=-1;
-  		if(linha>cont+2)
-  			fprintf(file_temp,"\n");
-  		
-  	}
-  }
-
-	  fclose(tab_file);
-	  remove("nome_tab");
-	  rename("fileTemp", tab->nome);
-	  fclose(file_temp);
-
-	  //liberando memória
-	  freeStruct_tab(tab);
-	}
-
+  //liberando memória
+  freeStruct_tab(tab);
+}
 
 void apagarTab(char nome_tab[50], int n){
-		FILE *relacao_file, *file_temp, *tab_file;
-		char aux[50];
-		int num;
+  FILE *relacao_file, *file_temp;
+  char aux[50];
+  int num;
 		
-		tabela *tab; //tipo struct tabela_t
+  tabela *tab; //tipo struct tabela_t
 
-		tab=alocaStruct_tab(n);  
-		fillStruct_tab(tab, nome_tab, n);
+  tab=alocaStruct_tab(n);  
+  fillStruct_tab(tab, nome_tab, n);
 
-		//abri o arquivo relacaoTab para ler as tabelas existentes
-	  relacao_file = fopen("relacaoTab", "r");
-    
-	  if(relacao_file == NULL){
-	    printf("\nALERTA: Relação de tabelas na linha %d não abriu!\n",__LINE__);
-	  }
-	  		
+  //abri o arquivo relacaoTab para ler as tabelas existentes
+  relacao_file = fopen("relacaoTab", "r");
+  if(relacao_file == NULL)
+    printf("\nALERTA: Relação de tabelas na linha %d não abriu!\n",__LINE__);
 
-	  file_temp=fopen("fileTemp","w+");
-		
-	  //Copiando o arquivo relacaoTab para um temporário até chegar a tabela a ser excluida, quando chega a tabela que será excluida ele fecha o arquivo e copia o restante das tabelas na linha abaixo
-	  while(fscanf(relacao_file," %s %d", aux, &num)!=EOF){
-	    if(strcmp(aux, nome_tab)==0){
-	    	fclose(file_temp);
+  file_temp=fopen("fileTemp", "a+");
+  if(file_temp==NULL)
+    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
 
-	    }else{
-	      file_temp=fopen("fileTemp", "a");
+  //Copiando o arquivo relacaoTab para um temporário pulando alinha que contém a tabela a ser excluida
+  while(fscanf(relacao_file," %s %d", aux, &num)!=EOF){
+    if(strcmp(aux, nome_tab)==0){
+      // nada
 
-	      if(file_temp==NULL)
-		    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
+    } else{
+      fprintf(file_temp, "%s %d", aux, num);
+      fprintf(file_temp, "\n");
+    }
+  }
 
-	      	fprintf(file_temp, "%s %d", aux, num);
-	      	fprintf(file_temp, "\n");
-	    }
+  rename("fileTemp", "relacaoTab");
+  fclose(file_temp);
+  remove(tab->nome); 
 
-	  }
-
-			rename("fileTemp", "relacaoTab");
-  			fclose(file_temp);
-			remove(tab->nome); 
-
-			//liberando memória
-			freeStruct_tab(tab);
-		}
+  //liberando memória
+  freeStruct_tab(tab);
+}
