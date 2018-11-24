@@ -55,7 +55,7 @@ void fillStruct_tab(tabela *tab, char nome_tab[50], int col){
 void freeStruct_tab(tabela *tab){
   int j;
   
-  for(int j=0; j<tab->C; j++)  
+  for(j=0; j<tab->C; j++)  
     free(tab->tab_L[j]);
 
   free(tab->tab_L);
@@ -145,7 +145,7 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
 void listagem_tab(){ 
   FILE *relacao_file;
   char nome[50];
-  int n;
+  
   
   printf("\n *** Tabelas existentes ***\n");
 
@@ -328,7 +328,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
 void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   FILE *tab_file;
   char str_temp[50], id_file[50];
-  int i,j,temp;
+  int i,j;
   int campoOK; //bool
   double x_temp;
   
@@ -424,7 +424,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
 void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
  FILE *tab_file,*file_temp;
-  char str_temp[50], id_file[50];
+  char str_temp[50];
   int i,cont;
   int campoOK,existe_id; //bool
   char chave[10],chave_user[10],c_temp;
@@ -507,10 +507,10 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
 void insereColuna_tab(char nome_tab[50], int n){
 
   FILE *tab_file, *file_temp, *relacao_file;
-  char str_temp[50], id_file[50], nome_campo[50];
-  int i,j,temp, tipo_campo;
+  char nome_campo[50];
+  int i, tipo_campo;
   int campoOK; //bool
-  double x_temp;
+ 
   
   tabela *tab;
  
@@ -554,12 +554,9 @@ void insereColuna_tab(char nome_tab[50], int n){
 
 
   char aux2[50];
-  char str_tipo[10];
   int cont;
-  long int pos;
-  char c_temp;
-  int campo_OK, num;
-  char aux[50];
+  int num;
+  
   
   cont=0;
   i=0;
@@ -1520,4 +1517,3 @@ void apagarTab(char nome_tab[50], int n){
 			//liberando memória
 			freeStruct_tab(tab);
 		}
-
