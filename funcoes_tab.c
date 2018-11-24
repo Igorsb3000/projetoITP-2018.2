@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h> // macros dos limites dos tipos int, uint, char, entre outra
+#define _GNU_SOURCE char *strcasestr(const char *haystack, const char *needle);
 #include "lista_func.h"
 
 tabela *alocaStruct_tab(int col){ 
@@ -60,6 +56,7 @@ void freeStruct_tab(tabela *tab){
 
   free(tab->tab_L);
   free(tab->tipos);
+  free(tab);
 }
 
 void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
@@ -649,7 +646,8 @@ void listarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(strlen(str_temp)>maior)
       maior=strlen(str_temp);
-      fgetc(tab_file); // pule delimitador ; 
+
+    fgetc(tab_file); // pule delimitador ; 
   }
 
   rewind(tab_file);
@@ -710,7 +708,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(strlen(str_temp)>maior)
       maior=strlen(str_temp);
-      fgetc(tab_file); // pule delimitador ; 
+
+    fgetc(tab_file); // pule delimitador ; 
   }
 
   rewind(tab_file);
@@ -721,8 +720,9 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
     if(line==1)
       printf("%-*s ",maior+2,str_temp);
-      fgetc(tab_file); // pule delimitador ; 
-      col++;
+
+    fgetc(tab_file); // pule delimitador ; 
+    col++;
 
     if(col==tab->C){
       line++;

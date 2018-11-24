@@ -12,12 +12,11 @@ Melhorias:
 #include "lista_func.h"
 
 int main(void) {
-  FILE *tabela_file, *relacao_file;
+  FILE *relacao_file; 
   char op;
   char input[50], str_aux[50];
   int continua, existe; //bool
   int colInput;
-  char aux[10];
 
   printf("Bem vindo ao SGBD KI! - vs beta - \n");
 
