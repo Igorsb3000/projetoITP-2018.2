@@ -766,7 +766,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
   do{ 
     do{
-
+      tab_file=fopen(nome_tab,"r");
       printf("\n *** MENU ***\n");
       printf("\n 1 - Valores maior que o valor informado");
       printf("\n 2 - Valores maior ou igual que o valor informado");
@@ -1345,7 +1345,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  usr_str[strlen(str_find)-2]='\0';
 
 	  printf("\nCampos que contém %s na coluna %s:\n", usr_str, usr_campo);
-
+	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
@@ -1362,6 +1362,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	    }
 	    col++;
 	  }
+	  
 
 	} else if(str_find[0]=='*'){
 	   
@@ -1371,7 +1372,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  usr_str[strlen(str_find)-1]='\0';
 
 	  printf("Campos que terminam com %s na coluna %s:\n", usr_str, usr_campo);
-
+	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
@@ -1400,6 +1401,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	    }
 	    col++;
 	  }
+	  
 
 	} else if(str_find[strlen(str_find)-1]=='*'){
 
@@ -1409,7 +1411,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  usr_str[strlen(str_find)-1]='\0';
 
 	  printf("Campos que iniciam com %s na coluna %s:\n", usr_str, usr_campo);
-
+	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
@@ -1432,8 +1434,9 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	}
 	
+	
       } else {
-	printf("\n>>> ERRO: Operação só funciona com string.\n\n");
+		printf("\n>>> ERRO: Operação só funciona com string.\n\n");
       }
       break;
     case 7:
@@ -1447,9 +1450,6 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     fclose(tab_file);
   }while(1); 
  
-
-
-
 // FUNÇÃO opera apenas em inteiros, float, double e char por enquanto. Falta fazer para strings
   
   freeStruct_tab(tab);
