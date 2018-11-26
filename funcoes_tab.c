@@ -138,6 +138,69 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
   return campoOK;
 }
 
+
+// Função que imprime uma linha de uma tabela a partir de um id
+void listaLinha_tab(char nome_tab[50], int n, char id_print[50]){ 
+  FILE *tab_file;
+  char str_temp[50], chave[50];
+  int line,col,maior;
+  
+  tabela *tab;
+ 
+  tab=alocaStruct_tab(n);
+  fillStruct_tab(tab, nome_tab, n);	
+
+  tab_file=fopen(nome_tab,"r");
+  if(tab_file==NULL)
+    printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__);
+
+  maior=0;
+  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+    if(strlen(str_temp)>maior)
+      maior=strlen(str_temp);
+
+    fgetc(tab_file); // pule delimitador ; 
+  }
+
+  rewind(tab_file);
+
+  //procurar linha do id passado
+  line=0;
+  while(fscanf(tab_file," %[^;]s", chave)!=EOF){
+    if(line>=2 && strcmp(chave, id_print)==0){
+      break;
+    }
+    fscanf(tab_file, " %*[^\n]s");
+    line++;
+  }
+  
+  //imprima linha do id encontrado
+  printf("%-*s ",maior+5,chave);
+  fgetc(tab_file); // pule delimitador ; 
+  col=1; 
+  while(col<tab->C){
+    fscanf(tab_file," %[^;]s",str_temp);
+
+      if(strcmp(str_temp,"NULL")==0){
+	printf("%-*s ",maior+5," ");
+      } else{
+	printf("%-*s ",maior+5,str_temp);
+      }
+
+    fgetc(tab_file); // pule delimitador ; 
+    col++;
+
+  }
+  
+  printf("\n");
+
+  fclose(tab_file);
+
+  freeStruct_tab(tab);
+  
+}
+
+
 //Função para listar todas tabelas
 void listagem_tab(){ 
   FILE *relacao_file;
@@ -683,7 +746,7 @@ void listarDados_tab(char nome_tab[50], int n){
 int pesquisarDados_tab(char nome_tab[50], int n){
   
   FILE *tab_file;
-  char str_temp[50], str_tipo[10], str_find[50], *str;
+  char str_temp[50], str_tipo[10], str_find[50], *str,id_print[50];
   int campoOK; //bool
   int i, op, col, usr_col, line, maior;
   int usr_int,tab_int;
@@ -789,16 +852,20 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     case 1: //lista todos os números MAIORES que o passado pelo usuário
 
       if(tipo_campo==int_){
-		sscanf(str_find,"%d",&usr_int);
-		printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
+	sscanf(str_find,"%d",&usr_int);
+	printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%d",&tab_int);
 	    if(usr_int<tab_int){
-	      printf("%d\n", tab_int);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -816,10 +883,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float<tab_float){
-	      printf("%f\n", tab_float);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -837,10 +908,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%lf",&tab_double);
 	    if(usr_double<tab_double){
-	      printf("%lf\n", tab_double);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -857,11 +932,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%c",&tab_char);
 	    if(usr_char<tab_char){
-	      printf("%c\n", tab_char);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -878,10 +956,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)<0){ //se str_temp > usr_str
-	      printf("%s\n", str_temp);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -903,11 +984,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%d",&tab_int);
 	    if(usr_int<=tab_int){
-	      printf("%d\n", tab_int);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -925,6 +1009,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float<=tab_float){

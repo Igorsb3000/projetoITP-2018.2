@@ -23,6 +23,8 @@ void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]);
 
 int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo);
 
+void listaLinha_tab(char nome_tab[50], int n, char id_print[50]);
+
 void listagem_tab();
 
 void cria_tab();
