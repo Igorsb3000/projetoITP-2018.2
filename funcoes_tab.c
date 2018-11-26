@@ -360,13 +360,12 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     if(campoOK){
       sscanf(str_temp,"%lf",&x_temp);
       if(0>x_temp || x_temp>UINT_MAX){
-	campoOK=0;
-	printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
+		campoOK=0;
+		printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
       } else{
 	// checagem se id é único
-	tab_file = fopen(nome_tab, "r");
-	if(tab_file == NULL)
-	  printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
+	
+     rewind(tab_file);
 	  
 	j=0; // pule linha de tipos e campos do arquivo
 	while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
@@ -398,7 +397,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     
       tab_file = fopen(nome_tab, "a");
       if(tab_file == NULL)
-	printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
+		printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
       
       fprintf(tab_file, "%s;", str_temp);
       fclose(tab_file);
@@ -523,8 +522,8 @@ void insereColuna_tab(char nome_tab[50], int n){
     //verificar se o campo já existe
     for(int i=0; i<tab->C; i++){
       if(strcmp(tab->tab_L[i],nome_campo)==0){
-	campoOK=0;
-	break;
+		campoOK=0;
+		break;
       }
     }
     
@@ -590,6 +589,7 @@ void insereColuna_tab(char nome_tab[50], int n){
   fclose(file_temp);
   remove(tab->nome);
   rename("fileTemp",tab->nome);
+  fclose(tab_file); //AQUI<<<<<< 25 allocs and 24 free
 		
 
   relacao_file = fopen("relacaoTab", "r");
@@ -600,6 +600,9 @@ void insereColuna_tab(char nome_tab[50], int n){
   		
 
   file_temp=fopen("fileTemp","w+");
+
+  if(file_temp==NULL)
+    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
 	
   //Copiando o arquivo relacaoTab para um temporário até a tabela a ser substituida
   while(fscanf(relacao_file," %s %d", aux2, &num)!=EOF){
@@ -611,11 +614,7 @@ void insereColuna_tab(char nome_tab[50], int n){
       fprintf(file_temp, "\n");
     }
 
-  }
-		  
-  if(file_temp==NULL)
-    printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
-		  
+  }		  
   		
   fclose(relacao_file);
   remove("relacaoTab");
@@ -756,7 +755,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     }
     col++;
   }
-  fclose(tab_file);
+
+  rewind(tab_file);
   
   if(!campoOK){
     printf("\n>>> ERRO: campo inválido.\n");
@@ -785,11 +785,6 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
       //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
     } while(!checaLimite_campos(str_find, tipo_campo));
-
-
-    tab_file=fopen(nome_tab,"r");
-    if(tab_file==NULL)
-      printf("\nALERTA: tabela não abriu na linha %d.\n\n",__LINE__); 
 
     switch (op){
     case 1: //lista todos os números MAIORES que o passado pelo usuário
@@ -1563,6 +1558,7 @@ void apagarTab(char nome_tab[50], int n){
 
   rename("fileTemp", "relacaoTab");
   fclose(file_temp);
+  fclose(relacao_file); 
   remove(tab->nome); 
 
   //liberando memória
