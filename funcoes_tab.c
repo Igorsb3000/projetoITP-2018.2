@@ -441,9 +441,9 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", chave)!=EOF){
       if(cont>=2 && strcmp(chave, chave_user)==0){
-	existe_id=1;
-	pos=ftell(tab_file);
-	break;
+		existe_id=1;
+		pos=ftell(tab_file);
+		break;
       }
       fscanf(tab_file, " %*[^\n]s");
       cont++;
@@ -496,7 +496,6 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
   rename("fileTemp",tab->nome);
 
   freeStruct_tab(tab);
-
 
 }
 
@@ -779,7 +778,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       printf("\n\nSelecione a operação desejada: \n");
       scanf(" %d", &op);
       if(op!=7){ 
-	  printf("\nInforme um valor para comparação: \n");
+	  printf("\n\nInforme um valor para comparação: \n");
 	  scanf(" %[^\n]s", str_find); 
       }
 
@@ -880,7 +879,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	  if(line>1 && col==usr_col){ 
+	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)<0){ //se str_temp > usr_str
 	      printf("%s\n", str_temp);	
 	    }
@@ -989,7 +988,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	  if(line>1 && col==usr_col){ 
+	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)<=0){ //se str_temp >= usr_str
 	      printf("%s\n", str_temp);	
 	    }
@@ -1098,7 +1097,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	  if(line>1 && col==usr_col){ 
+	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)==0){
 	      printf("%s\n", str_temp);	
 	    }
@@ -1207,7 +1206,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	  if(line>1 && col==usr_col){ 
+	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)>0){ //se str_temp < usr_str
 	      printf("%s\n", str_temp);	
 	    }
@@ -1317,7 +1316,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	  if(line>1 && col==usr_col){ 
+	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ //AQUI<<<<<<<<<<<<<<<
 	    if(strcmp(usr_str,str_temp)>=0){ //se str_temp <= usr_str
 	      printf("%s\n", str_temp);	
 	    }
