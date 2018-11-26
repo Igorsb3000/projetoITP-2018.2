@@ -1008,12 +1008,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
 	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float<=tab_float){
-	      printf("%f\n", tab_float);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1030,11 +1032,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%lf",&tab_double);
 	    if(usr_double<=tab_double){
-	      printf("%lf\n", tab_double);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1051,11 +1056,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%c",&tab_char);
 	    if(usr_char<=tab_char){
-	      printf("%c\n", tab_char);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1072,10 +1080,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)<=0){ //se str_temp >= usr_str
-	      printf("%s\n", str_temp);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1096,11 +1107,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%d",&tab_int);
 	    if(usr_int==tab_int){
-	      printf("%d\n", tab_int);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1117,11 +1131,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float==tab_float){
-	      printf("%f\n", tab_float);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1138,11 +1155,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
 
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%lf",&tab_double);
 	    if(usr_double==tab_double){
-	      printf("%lf\n", tab_double);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1159,11 +1179,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
 	
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%c",&tab_char);
 	    if(usr_char==tab_char){
-	      printf("%c\n", tab_char);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1181,10 +1204,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)==0){
-	      printf("%s\n", str_temp);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1205,11 +1231,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ //listas todos os números MAIORES que o passado pelo usuário
 	    sscanf(str_temp,"%d",&tab_int);
 	    if(usr_int>tab_int){
-	      printf("%d\n", tab_int);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1226,11 +1255,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float>tab_float){
-	      printf("%f\n", tab_float);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1247,11 +1279,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%lf",&tab_double);
 	    if(usr_double>tab_double){
-	      printf("%lf\n", tab_double);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1268,11 +1303,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%c",&tab_char);
 	    if(usr_char>tab_char){
-	      printf("%c\n", tab_char);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1290,10 +1328,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ 
 	    if(strcmp(usr_str,str_temp)>0){ //se str_temp < usr_str
-	      printf("%s\n", str_temp);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1315,11 +1356,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ //listas todos os numeros MAIORES que o passado pelo usuário
 	    sscanf(str_temp,"%d",&tab_int);
 	    if(usr_int>=tab_int){
-	      printf("%d\n", tab_int);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1336,11 +1380,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%f",&tab_float);
 	    if(usr_float>=tab_float){
-	      printf("%f\n", tab_float);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1357,11 +1404,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%lf",&tab_double);
 	    if(usr_double>=tab_double){
-	      printf("%lf\n", tab_double);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1378,11 +1428,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-	
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col){ 
 	    sscanf(str_temp,"%c",&tab_char);
 	    if(usr_char>=tab_char){
-	      printf("%c\n", tab_char);
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1400,10 +1453,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	  if(line>1 && col==0){
+	    strcpy(id_print,str_temp);
+	  }
+	  
 	  if(line>1 && col==usr_col && strcmp(str_temp,"NULL")){ //AQUI<<<<<<<<<<<<<<<
 	    if(strcmp(usr_str,str_temp)>=0){ //se str_temp <= usr_str
-	      printf("%s\n", str_temp);	
+	      listaLinha_tab(nome_tab, tab->C, id_print);
 	    }
 	  }
 	  fgetc(tab_file); // pule delimitador ;
@@ -1432,10 +1488,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	    if(line>1 && col==0){
+	      strcpy(id_print,str_temp);
+	    }
+	    
 	    if(line>1 && col==usr_col){ 
 	      if(strcasestr(str_temp,usr_str)!=NULL){
-			printf("%s\n", str_temp);	
+		listaLinha_tab(nome_tab, tab->C, id_print);
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;
@@ -1459,7 +1518,10 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	    if(line>1 && col==0){
+	      strcpy(id_print,str_temp);
+	    }
+	    
 	    if(line>1 && col==usr_col){
 
 	      str=str_temp;
@@ -1468,7 +1530,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 		if(str!=NULL){
 		  if(strlen(str)==strlen(usr_str)){
-		    printf("%s\n", str_temp);
+		    listaLinha_tab(nome_tab, tab->C, id_print);
 		    break;
 		  }
 		  str=str+1;
@@ -1498,13 +1560,16 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
-
+	    if(line>1 && col==0){
+	      strcpy(id_print,str_temp);
+	    }
+ 
 	    if(line>1 && col==usr_col){ 
 	      str=strcasestr(str_temp,usr_str);
 
 	    if(str!=NULL){
-			if(strlen(str)==strlen(str_temp))
-			  printf("%s\n", str_temp);	
+	      if(strlen(str)==strlen(str_temp))
+		listaLinha_tab(nome_tab, tab->C, id_print);
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;

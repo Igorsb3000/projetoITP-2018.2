@@ -2,7 +2,8 @@
 Problemas:
 - definir tamanho máximo dos campos com uma constante
 - fazer a cópia de arquivo no edita_linha mais eficiente (perguntar se deseja editar cada campo, ao invés de fazer o usuário reescrever tudo)
-- proibir o usuário de utilizar o ; em algum campo 
+!!!!!!!!!!!!!!!- proibir o usuário de utilizar o ; e * em algum campo 
+- arrumar warnings
 
 Melhorias:
 - coversão de tipos pode retornar um string constante de modo a não precisar declarar variáveis para utilizá-lo?
