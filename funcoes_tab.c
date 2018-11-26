@@ -739,13 +739,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(line==1){
       if(strcmp(usr_campo, str_temp)==0){
-	campoOK=1;
-	usr_col=col;
-	tipo_campo=tab->tipos[usr_col];
+		campoOK=1;
+		usr_col=col;
+		tipo_campo=tab->tipos[usr_col];
 
-	conversao_tipos(tipo_campo,str_tipo);
-	printf("O campo escolhido foi: %s, tipo %s\n", usr_campo, str_tipo);
-	break;
+		conversao_tipos(tipo_campo,str_tipo);
+		printf("O campo escolhido foi: %s, tipo %s\n", usr_campo, str_tipo);
+		break;
       }
     }
     fgetc(tab_file); // pule delimitador ;
@@ -779,8 +779,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       printf("\n\nSelecione a operação desejada: \n");
       scanf(" %d", &op);
       if(op!=7){ 
-	printf("\nInforme um valor para comparação: \n");
-	scanf(" %[^\n]s", str_find); 
+	  printf("\nInforme um valor para comparação: \n");
+	  scanf(" %[^\n]s", str_find); 
       }
 
       //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
@@ -795,8 +795,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     case 1: //lista todos os números MAIORES que o passado pelo usuário
 
       if(tipo_campo==int_){
-	sscanf(str_find,"%d",&usr_int);
-	printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
+		sscanf(str_find,"%d",&usr_int);
+		printf("Números maiores que %d na coluna %s:\n", usr_int, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -816,8 +816,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==float_){
-	sscanf(str_find,"%f",&usr_float);
-	printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
+		sscanf(str_find,"%f",&usr_float);
+		printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -837,8 +837,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==double_){
-	sscanf(str_find,"%lf",&usr_double);
-	printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
+		sscanf(str_find,"%lf",&usr_double);
+		printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -858,8 +858,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==char_){
-	sscanf(str_find,"%c",&usr_char);
-	printf("Caracteres lexicograficamente maiores que %c na coluna %s:\n", usr_char, usr_campo);
+		sscanf(str_find,"%c",&usr_char);
+		printf("Caracteres lexicograficamente maiores que %c na coluna %s:\n", usr_char, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -879,14 +879,14 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==string_){
-	strcpy(usr_str,str_find);
-	printf("Palavras lexicograficamente maiores que %s na coluna %s:\n", usr_str, usr_campo);
+		strcpy(usr_str,str_find);
+		printf("Palavras lexicograficamente maiores que %s na coluna %s:\n", usr_str, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
 	  if(line>1 && col==usr_col){ 
-	    if(strcmp(usr_str,str_temp)>0){
+	    if(strcmp(usr_str,str_temp)<0){ //se str_temp > usr_str
 	      printf("%s\n", str_temp);	
 	    }
 	  }
@@ -995,7 +995,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
 	  if(line>1 && col==usr_col){ 
-	    if(strcmp(usr_str,str_temp)>=0){
+	    if(strcmp(usr_str,str_temp)<=0){ //se str_temp >= usr_str
 	      printf("%s\n", str_temp);	
 	    }
 	  }
@@ -1213,7 +1213,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
 	  if(line>1 && col==usr_col){ 
-	    if(strcmp(usr_str,str_temp)<0){
+	    if(strcmp(usr_str,str_temp)>0){ //se str_temp < usr_str
 	      printf("%s\n", str_temp);	
 	    }
 	  }
@@ -1323,7 +1323,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
 	  if(line>1 && col==usr_col){ 
-	    if(strcmp(usr_str,str_temp)<=0){
+	    if(strcmp(usr_str,str_temp)>=0){ //se str_temp <= usr_str
 	      printf("%s\n", str_temp);	
 	    }
 	  }
@@ -1356,7 +1356,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 
 	    if(line>1 && col==usr_col){ 
 	      if(strcasestr(str_temp,usr_str)!=NULL){
-		printf("%s\n", str_temp);	
+			printf("%s\n", str_temp);	
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;
@@ -1384,8 +1384,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	      str=strcasestr(str_temp,usr_str);
 
 	      if(str!=NULL){
-		if(strlen(str)==strlen(usr_str))
-		  printf("%s\n", str_temp);	
+			if(strlen(str)==strlen(usr_str))
+		  		printf("%s\n", str_temp);	
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;
@@ -1412,9 +1412,9 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	    if(line>1 && col==usr_col){ 
 	      str=strcasestr(str_temp,usr_str);
 
-	      if(str!=NULL){
-		if(strlen(str)==strlen(str_temp))
-		  printf("%s\n", str_temp);	
+	    if(str!=NULL){
+			if(strlen(str)==strlen(str_temp))
+			  printf("%s\n", str_temp);	
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;
@@ -1471,14 +1471,15 @@ void apagarLinha(char nome_tab[50], int n){
     scanf(" %s", chave_user);
 
     //procura o ID da linha que será apagada
+    rewind(tab_file);
     cont=0;
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", chave)!=EOF){
     	
       if(cont>=2 && strcmp(chave, chave_user)==0){
-	existe_id=1;
-	printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
-	break;
+		existe_id=1;
+		printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
+		break;
       }
 
       fscanf(tab_file, " %*[^\n]s");
@@ -1507,9 +1508,9 @@ void apagarLinha(char nome_tab[50], int n){
     col++;
 
     if(linha!=cont){
-      fprintf(file_temp, "%s;", aux);
+      	fprintf(file_temp, "%s;", aux);
       if(col==tab->C-1){
-	fprintf(file_temp,"\n");
+		fprintf(file_temp,"\n");
       }	
     }
 
