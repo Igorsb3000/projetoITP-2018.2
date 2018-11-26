@@ -1375,13 +1375,22 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  line=0; col=0;
 	  while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
-	    if(line>1 && col==usr_col){ 
-	      str=strcasestr(str_temp,usr_str);
+	    if(line>1 && col==usr_col){
 
-	      if(str!=NULL){
-			if(strlen(str)==strlen(usr_str))
-		  		printf("%s\n", str_temp);	
-	      }
+	      str=str_temp;
+	      do{
+		str=strcasestr(str,usr_str);
+
+		if(str!=NULL){
+		  if(strlen(str)==strlen(usr_str)){
+		    printf("%s\n", str_temp);
+		    break;
+		  }
+		  str=str+1;
+		  // printf("teste: %s %s \n", str_temp,str);
+	
+		}
+	      }while(str!=NULL);
 	    }
 	    fgetc(tab_file); // pule delimitador ;
 			    
