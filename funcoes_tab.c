@@ -65,7 +65,7 @@ void conversao_tipos(enum tipos_tab TIPO, char str_tipo[10]){
 }
 
 // checagem se valor de campo é compatível com o tipo do campo
-int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
+int checa_campos(char campo[50], enum tipos_tab tipo_campo){
   int campoOK=1; // bool
   int n_pontos=0;
   unsigned int i;
@@ -121,7 +121,7 @@ int checaLimite_campos(char campo[50], enum tipos_tab tipo_campo){
     }
 
     } else if(tipo_campo==char_){
-      if(strlen(campo)>1 || isalpha(campo[0])==0)
+      if(strlen(campo)>1 || campo[0]==';' )
 	campoOK=0;
 
     }
@@ -225,7 +225,7 @@ void listagem_tab(){
 void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
   FILE *tabela_file, *relacao_file;
   tabela *tabela_user;
-  int i,j;
+  unsigned int i,j;
   char nome_campo[50], nome_tab[50], str_temp[50];
   int tipo_campo, quant_campos; 
   int campoOK, idOK, id_int=1; // bool
@@ -277,8 +277,17 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
       }
     }
 
+    // Proiba a utilização de caracteres reservados pelo sistema
+    for(i=0;i<strlen(nome_campo);i++){
+      if(nome_campo[i]=='*' || nome_campo[i]==';'){
+	printf("\n>>>ERRO: '*' e ';' são caracteres reservados pelo sistema.\n\n");
+	campoOK=0;
+	break;
+      }  
+    }
+
     // Se for o último campo, VERIFICAR SE TEM UM CAMPO DISPONIVEL PARA SER UM ID
-    if(j==(tabela_user->C-1)){ 
+    if(j==(unsigned int)(tabela_user->C-1)){ 
 
       id_int=0;
       for(i=0;i<j;i++){
@@ -295,7 +304,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
     if(tipo_campo != 1 && tipo_campo != 2 && tipo_campo != 3 && tipo_campo != 4 && tipo_campo != 5){
       printf("\n>>> ERRO: Os tipos precisam ser: 1-int, 2-float, 3-double, 4-char ou 5-string.\n\n");
     } else if(!campoOK){ 
-      printf("\n>>> ERRO: Campo já foi criado.\n\n"); 
+      printf("\n>>> ERRO: Campo já foi criado ou inválido.\n\n"); 
     } else if(!id_int){ 
       printf("\n>>> ERRO: Insira um campo obrigatoriamente do tipo int para ser o ID.\n\n");
     } else{      
@@ -304,7 +313,7 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
       j++;
     }
 
-  } while(j< (tabela_user->C));
+  } while(j<(unsigned int)(tabela_user->C));
 
   // Criando campo de id
   int j_id;
@@ -393,12 +402,12 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
   tabela *tab;
  
   tab=alocaStruct_tab(n);
+  fillStruct_tab(tab, nome_tab, n);
 
+  
   tab_file = fopen(nome_tab, "r");    
   if(tab_file == NULL)
     printf("\nALERTA: Arquivo na linha %d não abriu!\n\n",__LINE__);
-  	
-  	fillStruct_tab(tab, nome_tab, n);
 
   i=0;
   do{
@@ -443,13 +452,26 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
       }	
     }
     } else{
-      campoOK=checaLimite_campos(str_temp,tab->tipos[i]);
-      if(tab->tipos[i] == string_){
+      
+      campoOK=checa_campos(str_temp,tab->tipos[i]);
+      
+      if(tab->tipos[i] == string_ ){
 
+	// Proiba a utilização de caracteres reservados pelo sistema
 	if(strcmp(str_temp, "NULL")==0){
 	  campoOK=0;
 	  printf("\n>>>ERRO: string reservada pelo sistema.\n\n");
 	}
+
+	for(j=0;j<strlen(str_temp);j++){
+	  if(str_temp[j]=='*' || str_temp[j]==';'){
+	    printf("\n>>>ERRO: '*' e ';' são caracteres reservados pelo sistema.\n\n");
+	    campoOK=0;
+	    break;
+	  }  
+	}
+
+	
       }
     }
     
@@ -483,7 +505,7 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
  FILE *tab_file,*file_temp;
   char str_temp[50];
   int cont;
-  unsigned int i;
+  unsigned int i,j;
   int campoOK,existe_id; //bool
   char chave[10],chave_user[10],c_temp;
   long int pos;
@@ -536,7 +558,23 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
   do{
     printf("Entre com o campo %s (tipo: %d):",tab->tab_L[i],tab->tipos[i]);
     scanf(" %[^\n]s",str_temp);
-    campoOK=checaLimite_campos(str_temp,tab->tipos[i]);
+    
+    campoOK=checa_campos(str_temp,tab->tipos[i]);
+
+    // Proiba a utilização de caracteres reservados pelo sistema
+    if(strcmp(str_temp, "NULL")==0){
+      campoOK=0;
+      printf("\n>>>ERRO: string reservada pelo sistema.\n\n");
+    }
+	
+    for(j=0;j<strlen(str_temp);j++){
+      if(str_temp[j]=='*' || str_temp[j]==';'){
+	printf("\n>>>ERRO: '*' e ';' são caracteres reservados pelo sistema.\n\n");
+	campoOK=0;
+	break;
+      }  
+    }
+    
     if(campoOK){
       fprintf(file_temp,"%s;",str_temp);
       i++;
@@ -850,7 +888,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
       }
 
       //Confere se o número passado pelo usuário corresponde ao tipo da coluna:
-    } while(!checaLimite_campos(str_find, tipo_campo));
+    } while(!checa_campos(str_find, tipo_campo));
 
     switch (op){
     case 1: //lista todos os números MAIORES que o passado pelo usuário
