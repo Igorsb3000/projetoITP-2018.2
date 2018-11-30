@@ -22,7 +22,6 @@ O projeto pode é executado da seguinte forma:
 ** Autores ***
 
 Karine Piacentini Coelho da Costa
-
 Igor Silva Bento
 
 O trabalho foi feito em conjunto.
