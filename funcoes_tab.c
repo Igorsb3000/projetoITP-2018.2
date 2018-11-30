@@ -74,23 +74,23 @@ int checa_campos(char campo[50], enum tipos_tab tipo_campo){
 
   if(tipo_campo==int_){
 
-      if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
+    if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
+      campoOK=0;
+      
+    for(i=1;i<strlen(campo);i++){
+      if(isdigit(campo[i])==0){ 
 	campoOK=0;
+	break;
+      }		    	
+    }
       
-      for(i=1;i<strlen(campo);i++){
-	if(isdigit(campo[i])==0){ 
-	  campoOK=0;
-	  break;
-	}		    	
-      }
+    if(campoOK){
+      sscanf(campo,"%lf",&x_temp);
+      if(x_temp<INT_MIN || x_temp>INT_MAX)
+	campoOK=0;
+    }
       
-      if(campoOK){
-	sscanf(campo,"%lf",&x_temp);
-	if(x_temp<INT_MIN || x_temp>INT_MAX)
-	  campoOK=0;
-      }
-      
-    } else if(tipo_campo==float_){ 
+  } else if(tipo_campo==float_){ 
 
     if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
       campoOK=0;
@@ -105,7 +105,7 @@ int checa_campos(char campo[50], enum tipos_tab tipo_campo){
       }		    	
     }
     
-    } else if(tipo_campo==double_){ 
+  } else if(tipo_campo==double_){ 
 
     if(isdigit(campo[0])==0 && campo[0]!='+' && campo[0]!='-')
       campoOK=0;
@@ -120,11 +120,11 @@ int checa_campos(char campo[50], enum tipos_tab tipo_campo){
       }		    	
     }
 
-    } else if(tipo_campo==char_){
-      if(strlen(campo)>1 || campo[0]==';' )
-	campoOK=0;
+  } else if(tipo_campo==char_){
+    if(strlen(campo)>1 || campo[0]==';' )
+      campoOK=0;
 
-    }
+  }
 
   if(!campoOK){
     conversao_tipos(tipo_campo,tipo_temp);
@@ -178,11 +178,11 @@ void listaLinha_tab(char nome_tab[50], int n, char id_print[50]){
   while(col<tab->C){
     fscanf(tab_file," %[^;]s",str_temp);
 
-      if(strcmp(str_temp,"NULL")==0){
-	printf("%-*s ",maior+5," ");
-      } else{
-	printf("%-*s ",maior+5,str_temp);
-      }
+    if(strcmp(str_temp,"NULL")==0){
+      printf("%-*s ",maior+5," ");
+    } else{
+      printf("%-*s ",maior+5,str_temp);
+    }
 
     fgetc(tab_file); // pule delimitador ; 
     col++;
@@ -245,9 +245,9 @@ void cria_tab(){ //>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
 
     while(fscanf(relacao_file," %s %*d",str_temp)!=EOF){
       if(strcmp(nome_tab,str_temp)==0){
-		campoOK=0;
-		printf("\n>>> ERRO: tabela já existe.\n\n");
-		break;
+	campoOK=0;
+	printf("\n>>> ERRO: tabela já existe.\n\n");
+	break;
       }
     }
     
@@ -419,38 +419,38 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     
     if(i==0){
       // cheque se chave passada é um unsigned int
-    for(j=0; j<strlen(str_temp); j++){
-		if(isdigit(str_temp[j]) == 0){ 
-	  	campoOK=0;
-	  	printf("\n>>> ERRO: campo ID precisa ser do tipo unsigned int.\n\n");
-	  	break;
+      for(j=0; j<strlen(str_temp); j++){
+	if(isdigit(str_temp[j]) == 0){ 
+	  campoOK=0;
+	  printf("\n>>> ERRO: campo ID precisa ser do tipo unsigned int.\n\n");
+	  break;
 	}		    	
       }
 		
-    if(campoOK){
-      sscanf(str_temp,"%lf",&x_temp);
-      if(0>x_temp || x_temp>UINT_MAX){
-		campoOK=0;
-		printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
-      } else{
-	// checagem se id é único
+      if(campoOK){
+	sscanf(str_temp,"%lf",&x_temp);
+	if(0>x_temp || x_temp>UINT_MAX){
+	  campoOK=0;
+	  printf("\n>>> ERRO: campo passado não cabe em um unsigned int.\n\n");
+	} else{
+	  // checagem se id é único
 	
-     rewind(tab_file);
+	  rewind(tab_file);
 	  
-	j=0; // pule linha de tipos e campos do arquivo
-	while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
-	  fscanf(tab_file, " %*[^\n]s");
-	  if(j>1 && strcmp(str_temp,id_file)==0){ 
-	    printf("\n>>> ERRO: ID %s já existe!\n\n",str_temp);
-	    campoOK=0;
-	    break;
+	  j=0; // pule linha de tipos e campos do arquivo
+	  while(fscanf(tab_file, " %[^;]s", id_file)!=EOF){
+	    fscanf(tab_file, " %*[^\n]s");
+	    if(j>1 && strcmp(str_temp,id_file)==0){ 
+	      printf("\n>>> ERRO: ID %s já existe!\n\n",str_temp);
+	      campoOK=0;
+	      break;
+	    }
+	    j++;
 	  }
-	  j++;
-	}
 
-	fclose(tab_file);
-      }	
-    }
+	  fclose(tab_file);
+	}	
+      }
     } else{
       
       campoOK=checa_campos(str_temp,tab->tipos[i]);
@@ -480,7 +480,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
     
       tab_file = fopen(nome_tab, "a");
       if(tab_file == NULL)
-		printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
+	printf("\nALERTA: Tabela na linha %d não abriu!\n",__LINE__);
       
       fprintf(tab_file, "%s;", str_temp);
       fclose(tab_file);
@@ -502,7 +502,7 @@ void insereLinha_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao aloca
 
 
 void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação<<<<<<<<<<<<<
- FILE *tab_file,*file_temp;
+  FILE *tab_file,*file_temp;
   char str_temp[50];
   int cont;
   unsigned int i,j;
@@ -525,9 +525,9 @@ void editar_tab(char nome_tab[50], int n){//>>>>>>>>>>>já usa funcao alocação
     existe_id=0;
     while(fscanf(tab_file," %[^;]s", chave)!=EOF){
       if(cont>=2 && strcmp(chave, chave_user)==0){
-		existe_id=1;
-		pos=ftell(tab_file);
-		break;
+	existe_id=1;
+	pos=ftell(tab_file);
+	break;
       }
       fscanf(tab_file, " %*[^\n]s");
       cont++;
@@ -622,8 +622,8 @@ void insereColuna_tab(char nome_tab[50], int n){
     //verificar se o campo já existe
     for(i=0; i<(unsigned int) tab->C; i++){
       if(strcmp(tab->tab_L[i],nome_campo)==0){
-		campoOK=0;
-		break;
+	campoOK=0;
+	break;
       }
     }
     
@@ -757,16 +757,16 @@ void listarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
 
     if(line>0){
-    	if(strcmp(str_temp,"NULL")==0){
-    		printf("%-*s ",maior+5," ");
-    	}else{
-      		printf("%-*s ",maior+5,str_temp);
-      	}
+      if(strcmp(str_temp,"NULL")==0){
+	printf("%-*s ",maior+5," ");
+      }else{
+	printf("%-*s ",maior+5,str_temp);
+      }
 
-  	}
+    }
 
-      fgetc(tab_file); // pule delimitador ; 
-      col++;
+    fgetc(tab_file); // pule delimitador ; 
+    col++;
 
     if(col==tab->C){
       printf("\n");
@@ -840,13 +840,13 @@ int pesquisarDados_tab(char nome_tab[50], int n){
   while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
     if(line==1){
       if(strcmp(usr_campo, str_temp)==0){
-		campoOK=1;
-		usr_col=col;
-		tipo_campo=tab->tipos[usr_col];
+	campoOK=1;
+	usr_col=col;
+	tipo_campo=tab->tipos[usr_col];
 
-		conversao_tipos(tipo_campo,str_tipo);
-		printf("O campo escolhido foi: %s, tipo %s\n", usr_campo, str_tipo);
-		break;
+	conversao_tipos(tipo_campo,str_tipo);
+	printf("O campo escolhido foi: %s, tipo %s\n", usr_campo, str_tipo);
+	break;
       }
     }
     fgetc(tab_file); // pule delimitador ;
@@ -919,8 +919,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==float_){
-		sscanf(str_find,"%f",&usr_float);
-		printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
+	sscanf(str_find,"%f",&usr_float);
+	printf("Números maiores que %f na coluna %s:\n", usr_float, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -944,8 +944,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==double_){
-		sscanf(str_find,"%lf",&usr_double);
-		printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
+	sscanf(str_find,"%lf",&usr_double);
+	printf("Números maiores que %lf na coluna %s:\n", usr_double, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -969,8 +969,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==char_){
-		sscanf(str_find,"%c",&usr_char);
-		printf("Caracteres lexicograficamente maiores que '%c' na coluna %s:\n", usr_char, usr_campo);
+	sscanf(str_find,"%c",&usr_char);
+	printf("Caracteres lexicograficamente maiores que '%c' na coluna %s:\n", usr_char, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -993,8 +993,8 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  col++;
 	}
       } else if(tipo_campo==string_){
-		strcpy(usr_str,str_find);
-		printf("Palavras lexicograficamente maiores que '%s' na coluna %s:\n", usr_str, usr_campo);
+	strcpy(usr_str,str_find);
+	printf("Palavras lexicograficamente maiores que '%s' na coluna %s:\n", usr_str, usr_campo);
 
 	line=0; col=0;
 	while(fscanf(tab_file," %[^;]s",str_temp)!=EOF){
@@ -1519,7 +1519,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     case 6:
       if(tipo_campo==string_){
 
-	if(str_find[0]=='*' && str_find[strlen(str_find)-1]=='*'){
+	if(str_find[0]=='*' && str_find[strlen(str_find)-1]=='*'){ //função que faz busca do tipo *str*
 
 	  for(i=1;i<(strlen(str_find)-1);i++){
 	    usr_str[i-1]=str_find[i];
@@ -1549,7 +1549,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  }
 	  
 
-	} else if(str_find[0]=='*'){
+	} else if(str_find[0]=='*'){ //função que faz busca do tipo *str
 	   
 	  for(i=1;i<strlen(str_find);i++){
 	    usr_str[i-1]=str_find[i];
@@ -1576,7 +1576,6 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 		    break;
 		  }
 		  str=str+1;
-		  // printf("teste: %s %s \n", str_temp,str);
 	
 		}
 	      }while(str!=NULL);
@@ -1591,7 +1590,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	  }
 	  
 
-	} else if(str_find[strlen(str_find)-1]=='*'){
+	} else if(str_find[strlen(str_find)-1]=='*'){ //função que faz busca do tipo str*
 
 	  for(i=0;i<strlen(str_find)-1;i++){
 	    usr_str[i]=str_find[i];
@@ -1609,9 +1608,9 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	    if(line>1 && col==usr_col){ 
 	      str=strcasestr(str_temp,usr_str);
 
-	    if(str!=NULL){
-	      if(strlen(str)==strlen(str_temp))
-		listaLinha_tab(nome_tab, tab->C, id_print);
+	      if(str!=NULL){
+		if(strlen(str)==strlen(str_temp))
+		  listaLinha_tab(nome_tab, tab->C, id_print);
 	      }
 	    }
 	    fgetc(tab_file); // pule delimitador ;
@@ -1644,7 +1643,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 	      usr_str2[k]=str_find[j];
 	      k++;
 	    }
-	    usr_str2[k+1]='\0';
+	    usr_str2[k]='\0';
 
 
 	    printf("Campos que iniciam com '%s' e terminam com '%s' na coluna %s:\n", usr_str, usr_str2, usr_campo);
@@ -1663,7 +1662,6 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 		  if(strlen(str)==strlen(str_temp)){ // se inicia com a substring usr_str
 		    
 		    str2=str_temp+strlen(usr_str);
-		    //printf("teste1: %s %s \n", str_temp,str2);
 		    do{
 		      str2=strcasestr(str2,usr_str2);
 		      
@@ -1674,7 +1672,6 @@ int pesquisarDados_tab(char nome_tab[50], int n){
 			}
 
 			str2=str2+1;
-			//printf("teste3:  %s \n",str2);
 	
 		      }
 		    }while(str2!=NULL);
@@ -1712,7 +1709,7 @@ int pesquisarDados_tab(char nome_tab[50], int n){
     fclose(tab_file);
   }while(1); 
  
-// FUNÇÃO opera apenas em inteiros, float, double e char por enquanto. Falta fazer para strings
+  // FUNÇÃO opera apenas em inteiros, float, double e char por enquanto. Falta fazer para strings
   
   freeStruct_tab(tab);
   return 1;
@@ -1743,9 +1740,9 @@ void apagarLinha(char nome_tab[50], int n){
     while(fscanf(tab_file," %[^;]s", chave)!=EOF){
     	
       if(cont>=2 && strcmp(chave, chave_user)==0){
-		existe_id=1;
-		printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
-		break;
+	existe_id=1;
+	printf("Linha a ser apagada: %d\n", cont+1); //cont+1 é a linha exata que será apagada do arquivo
+	break;
       }
 
       fscanf(tab_file, " %*[^\n]s");
@@ -1774,9 +1771,9 @@ void apagarLinha(char nome_tab[50], int n){
     col++;
 
     if(linha!=cont){
-      	fprintf(file_temp, "%s;", aux);
+      fprintf(file_temp, "%s;", aux);
       if(col==tab->C-1){
-		fprintf(file_temp,"\n");
+	fprintf(file_temp,"\n");
       }	
     }
 

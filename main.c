@@ -1,15 +1,3 @@
-  /* 
-Problemas:
-- definir tamanho máximo dos campos com uma constante
-- fazer a cópia de arquivo no edita_linha mais eficiente (perguntar se deseja editar cada campo, ao invés de fazer o usuário reescrever tudo)
-!!!!!!!!!!!!!!!- proibir o usuário de utilizar o ; e * em algum campo 
-- arrumar warnings
-
-Melhorias:
-- coversão de tipos pode retornar um string constante de modo a não precisar declarar variáveis para utilizá-lo?
-- Minimizar a abertura de arquivos
- */
-
 #include "lista_func.h"
 
 int main(void) {
@@ -52,9 +40,9 @@ int main(void) {
       
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
       fclose(relacao_file);
@@ -72,9 +60,9 @@ int main(void) {
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
 
@@ -92,9 +80,9 @@ int main(void) {
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
       fclose(relacao_file);
@@ -102,7 +90,7 @@ int main(void) {
       if(existe)
         insereColuna_tab(input, colInput);
       else
-         printf("Tabela não existe!\n");
+	printf("Tabela não existe!\n");
       
       break;
     case '6':
@@ -113,9 +101,9 @@ int main(void) {
       existe=0;
       while(fscanf(relacao_file," %s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue
 
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
       fclose(relacao_file);
@@ -126,36 +114,36 @@ int main(void) {
         printf("Tabela não existe!\n");
       
       break;
-      case '7':
+    case '7':
       printf("Qual a tabela que deseja acessar?\n");
       scanf(" %s",input);
       
       relacao_file = fopen("relacaoTab", "r");
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue 
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
-       }
-     }
-     fclose(relacao_file);
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
+	}
+      }
+      fclose(relacao_file);
      
-     if(existe)
-      pesquisarDados_tab(input, colInput);
-    else
-     printf("Tabela não existe!\n");
+      if(existe)
+	pesquisarDados_tab(input, colInput);
+      else
+	printf("Tabela não existe!\n");
    
-   break;
-   case '8':
-    printf("Qual a tabela que deseja acessar?\n");
+      break;
+    case '8':
+      printf("Qual a tabela que deseja acessar?\n");
       scanf(" %s",input);
       relacao_file = fopen("relacaoTab", "r");
       
       existe=0;
       while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
-       if(strcmp(str_aux, input)==0){
-         existe=1;
-         break;
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
         }
       }
       fclose(relacao_file);
@@ -168,22 +156,22 @@ int main(void) {
       break;
     case '9':
       printf("Qual a tabela que deseja apagar?\n");
-        scanf(" %s",input);
-        relacao_file = fopen("relacaoTab", "r");
+      scanf(" %s",input);
+      relacao_file = fopen("relacaoTab", "r");
         
-        existe=0;
-        while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
-         if(strcmp(str_aux, input)==0){
-           existe=1;
-           break;
-          }
-        }
-        fclose(relacao_file);
+      existe=0;
+      while(fscanf(relacao_file,"%s %d\n",str_aux, &colInput)!=EOF){ //enquanto não for End of File, continue imprimindo
+	if(strcmp(str_aux, input)==0){
+	  existe=1;
+	  break;
+	}
+      }
+      fclose(relacao_file);
 
-        if(existe)
-          apagarTab(input, colInput);
-        else
-          printf("Tabela não existe!\n");
+      if(existe)
+	apagarTab(input, colInput);
+      else
+	printf("Tabela não existe!\n");
 
       break;
     case 's':
